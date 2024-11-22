@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B8C5C7DA-BB85-4083-8639-F40574DF37A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JoyPad", "src\JoyPad\JoyPad.csproj", "{8FF3ACA9-0E56-4473-8C0F-7FD7BA22CDDE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "src\TestApp\TestApp.csproj", "{4A8985FE-01F9-42C0-9702-D62DB1C872D4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8FF3ACA9-0E56-4473-8C0F-7FD7BA22CDDE} = {B8C5C7DA-BB85-4083-8639-F40574DF37A5}
+		{4A8985FE-01F9-42C0-9702-D62DB1C872D4} = {B8C5C7DA-BB85-4083-8639-F40574DF37A5}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8FF3ACA9-0E56-4473-8C0F-7FD7BA22CDDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FF3ACA9-0E56-4473-8C0F-7FD7BA22CDDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FF3ACA9-0E56-4473-8C0F-7FD7BA22CDDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FF3ACA9-0E56-4473-8C0F-7FD7BA22CDDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A8985FE-01F9-42C0-9702-D62DB1C872D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A8985FE-01F9-42C0-9702-D62DB1C872D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A8985FE-01F9-42C0-9702-D62DB1C872D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A8985FE-01F9-42C0-9702-D62DB1C872D4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
