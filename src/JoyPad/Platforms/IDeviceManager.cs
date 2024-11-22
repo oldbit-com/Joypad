@@ -1,6 +1,6 @@
 namespace OldBit.JoyPad.Platforms;
 
-internal interface IDeviceManager
+internal interface IDeviceManager : IDisposable
 {
     void StartListener();
 }

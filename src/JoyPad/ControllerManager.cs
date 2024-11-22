@@ -4,12 +4,7 @@ using OldBit.JoyPad.Platforms.MacOS;
 
 namespace OldBit.JoyPad;
 
-public class ControllerEventArgs(Controller controller) : EventArgs
-{
-    public Controller Controller { get; } = controller;
-}
-
-public sealed class ControllerManager
+public sealed class ControllerManager : IDisposable
 {
     private readonly IDeviceManager? _deviceManager;
 
@@ -65,5 +60,10 @@ public sealed class ControllerManager
         };
 
         return deviceManager;
+    }
+
+    public void Dispose()
+    {
+        _deviceManager?.Dispose();
     }
 }

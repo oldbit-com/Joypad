@@ -18,11 +18,11 @@ internal class HidController : Controller
 
     internal HidController(IntPtr device)
     {
+        _device = device;
+
         var name = IOHIDDeviceGetProperty(_device, kIOHIDProductKey).AsString();
 
         Name = name ?? "Unknown";
-        _device = device;
-
         Id = CreateDeviceUniqueId();
     }
 
