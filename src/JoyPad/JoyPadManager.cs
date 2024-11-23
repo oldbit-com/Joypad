@@ -8,6 +8,8 @@ public sealed class JoyPadManager : IDisposable
 {
     private readonly IDeviceManager? _deviceManager;
 
+    private bool _isStarted;
+
     public List<Controller> Controllers { get; } = [];
 
     public event EventHandler<ControllerEventArgs>? ControllerConnected;
@@ -34,9 +36,27 @@ public sealed class JoyPadManager : IDisposable
         }
     }
 
-    public void StartListener() => _deviceManager?.StartListener();
+    public void StartListener()
+    {
+        if (_isStarted)
+        {
+            return;
+        }
 
-    public void StopListener() => _deviceManager?.StopListener();
+        _deviceManager?.StartListener();
+        _isStarted = true;
+    }
+
+    public void StopListener()
+    {
+        if (!_isStarted)
+        {
+            return;
+        }
+
+        _deviceManager?.StopListener();
+        _isStarted = false;
+    }
 
     [SupportedOSPlatform("macos")]
     private HidDeviceManager CreateMacOSDeviceManager()
