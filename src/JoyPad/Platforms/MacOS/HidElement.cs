@@ -16,9 +16,18 @@ internal class HidElement : Control
     {
         Element = element;
         Usage = usage;
+
         Cookie = IOHIDElementGetCookie(element);
         Min = IOHIDElementGetLogicalMin(element);
         Max = IOHIDElementGetLogicalMax(element);
+
+        Name = ControlType switch
+        {
+            ControlType.Button => $"Button {GetUsageName()}",
+            ControlType.Analog => $"Stick {GetUsageName()}",
+            ControlType.Hat => $"D-Pad",
+            _ => string.Empty
+        };
     }
 
     internal static HidElement CreateButton(IntPtr element, uint usage) =>
@@ -30,11 +39,16 @@ internal class HidElement : Control
     internal static HidElement CreateAnalog(IntPtr element, uint usage) =>
         new(ControlType.Analog, element, usage);
 
-    public override string ToString() => ControlType switch
+    private string GetUsageName() => Usage switch
     {
-        ControlType.Button => $"Button {Usage}",
-        ControlType.Analog => $"Stick 0x{Usage:x2}",
-        ControlType.Hat => $"D-Pad",
-        _ => string.Empty
+        kHIDUsage_GD_X => "X",
+        kHIDUsage_GD_Y => "Y",
+        kHIDUsage_GD_Z => "Z",
+        kHIDUsage_GD_Rx => "Rx",
+        kHIDUsage_GD_Ry => "Ry",
+        kHIDUsage_GD_Rz => "Rz",
+        _ => Usage.ToString()
     };
+
+    public override string ToString() => Name;
 }

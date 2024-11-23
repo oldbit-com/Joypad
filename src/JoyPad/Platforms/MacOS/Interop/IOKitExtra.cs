@@ -10,7 +10,6 @@ internal partial class IOKit
 
     internal const int kHIDPage_GenericDesktop = 0x01;
     internal const int kHIDPage_Button = 0x09;
-    internal const int kHIDPage_Consumer = 0x0C;
 
     internal const int kHIDUsage_GD_Joystick = 0x04;
     internal const int kHIDUsage_GD_GamePad = 0x05;
@@ -21,9 +20,6 @@ internal partial class IOKit
     internal const int kHIDUsage_GD_Rx = 0x33;
     internal const int kHIDUsage_GD_Ry = 0x34;
     internal const int kHIDUsage_GD_Rz = 0x35;
-    internal const int kHIDUsage_GD_Slider = 0x36;
-    internal const int kHIDUsage_GD_Dial = 0x37;
-    internal const int kHIDUsage_GD_Wheel = 0x38;
     internal const int kHIDUsage_GD_Hatswitch = 0x39;
 
     private static IntPtr _kCFRunLoopDefaultMode = IntPtr.Zero;

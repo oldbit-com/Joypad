@@ -6,10 +6,6 @@ using static OldBit.JoyPad.Platforms.MacOS.Interop.IOKit;
 
 namespace OldBit.JoyPad.Platforms.MacOS;
 
-/// <summary>
-/// Used the following swift code as a reference:
-/// https://github.com/STREGAsGate/GateEngine/blob/a40ce90b62c10737cb5f5a1ab8c685ec38803d98/Sources/GateEngine/System/HID/GamePad/GamePadInterpreter/Interpreters/HID/IOKitGamePadInterpreter.swift#L351
-/// </summary>
 [SupportedOSPlatform("macos")]
 internal class HidController : Controller
 {
@@ -106,9 +102,6 @@ internal class HidController : Controller
                                 case kHIDUsage_GD_Rx:
                                 case kHIDUsage_GD_Ry:
                                 case kHIDUsage_GD_Rz:
-                                case kHIDUsage_GD_Slider:
-                                case kHIDUsage_GD_Dial:
-                                case kHIDUsage_GD_Wheel:
                                     control = HidElement.CreateAnalog(element, usage);
                                     AddControl(control);
 
@@ -123,7 +116,6 @@ internal class HidController : Controller
                             break;
 
                         case kHIDPage_Button:
-                        case kHIDPage_Consumer:
                             control = HidElement.CreateButton(element, usage);
                             AddControl(control);
 

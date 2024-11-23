@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
-using OldBit.JoyPad.Platforms.MacOS.Extensions;
 using static OldBit.JoyPad.Platforms.MacOS.Interop.CoreFoundation;
 using static OldBit.JoyPad.Platforms.MacOS.Interop.IOKit;
 
@@ -15,6 +14,7 @@ internal class ControllerEventArgs(HidController controller) : EventArgs
 [SupportedOSPlatform("macos")]
 internal class HidDeviceManager : IDeviceManager
 {
+    private IntPtr _manager = IntPtr.Zero;
     private IntPtr _runLoop = IntPtr.Zero;
     private GCHandle _gch;
     private readonly Thread _runLoopThread;
@@ -37,14 +37,22 @@ internal class HidDeviceManager : IDeviceManager
 
     public void StopListener()
     {
-        if (_runLoop == IntPtr.Zero)
+        if (_runLoop != IntPtr.Zero)
         {
-            return;
+            IOHIDManagerUnscheduleFromRunLoop(_manager, _runLoop, kCFRunLoopDefaultMode);
+            CFRunLoopStop(_runLoop);
+
+            _runLoop = IntPtr.Zero;
         }
 
-        CFRunLoopStop(_runLoop);
+        if (_manager != IntPtr.Zero)
+        {
+            var result = IOHIDManagerClose(_manager);
+            ThrowIfError(result, "Failed to close HID manager");
 
-        _runLoop = IntPtr.Zero;
+            _manager = IntPtr.Zero;
+        }
+
         _runLoopThread.Join();
     }
 
@@ -62,28 +70,25 @@ internal class HidDeviceManager : IDeviceManager
 
     private void RunLoopRun()
     {
-        using var manager = IOHIDManagerCreate(IntPtr.Zero).ToDisposable();
+        _manager = IOHIDManagerCreate(IntPtr.Zero);
 
         var deviceFilter = GetUsageFilter();
-        IOHIDManagerSetDeviceMatchingMultiple(manager, deviceFilter);
+        IOHIDManagerSetDeviceMatchingMultiple(_manager, deviceFilter);
 
         var context = GCHandle.ToIntPtr(_gch);
         unsafe
         {
-            IOHIDManagerRegisterDeviceMatchingCallback(manager, &DeviceAddedCallback, context);
-            IOHIDManagerRegisterDeviceRemovalCallback(manager, &DeviceRemovedCallback, context);
+            IOHIDManagerRegisterDeviceMatchingCallback(_manager, &DeviceAddedCallback, context);
+            IOHIDManagerRegisterDeviceRemovalCallback(_manager, &DeviceRemovedCallback, context);
         }
 
-        var result = IOHIDManagerOpen(manager);
+        var result = IOHIDManagerOpen(_manager);
         ThrowIfError(result, "Failed to open HID manager");
 
         _runLoop = CFRunLoopGetCurrent();
-        IOHIDManagerScheduleWithRunLoop(manager, _runLoop, kCFRunLoopDefaultMode);
+        IOHIDManagerScheduleWithRunLoop(_manager, _runLoop, kCFRunLoopDefaultMode);
 
         CFRunLoopRun();
-
-        result = IOHIDManagerClose(manager);
-        ThrowIfError(result, "Failed to close HID manager");
     }
 
     private static void ThrowIfError(int result, string message)
