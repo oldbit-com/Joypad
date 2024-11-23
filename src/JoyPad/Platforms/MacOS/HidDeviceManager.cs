@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using OldBit.JoyPad.Platforms.MacOS.Extensions;
 using static OldBit.JoyPad.Platforms.MacOS.Interop.CoreFoundation;
 using static OldBit.JoyPad.Platforms.MacOS.Interop.IOKit;
 
@@ -12,50 +13,86 @@ internal class ControllerEventArgs(HidController controller) : EventArgs
 }
 
 [SupportedOSPlatform("macos")]
-internal class HidDeviceManager : IDisposable, IDeviceManager
+internal class HidDeviceManager : IDeviceManager
 {
-    private IntPtr _manager;
-    private IntPtr _runLoop;
+    private IntPtr _runLoop = IntPtr.Zero;
     private GCHandle _gch;
+    private readonly Thread _runLoopThread;
 
     internal event EventHandler<ControllerEventArgs>? ControllerAdded;
     internal event EventHandler<ControllerEventArgs>? ControllerRemoved;
+    internal event EventHandler<ErrorEventArgs>? ErrorOccurred;
 
     internal HidDeviceManager()
     {
         _gch = GCHandle.Alloc(this);
-        _manager = IOHIDManagerCreate(IntPtr.Zero);
-        _runLoop = CFRunLoopGetCurrent();
+        _runLoopThread = new Thread(RunLoopRunThread)
+        {
+            IsBackground = true,
+            Name = "HID Device Listener"
+        };
     }
 
-    public void StartListener()
+    public void StartListener() => _runLoopThread.Start();
+
+    public void StopListener()
     {
-        IOHIDManagerScheduleWithRunLoop(_manager, _runLoop, kCFRunLoopDefaultMode);
+        if (_runLoop == IntPtr.Zero)
+        {
+            return;
+        }
+
+        CFRunLoopStop(_runLoop);
+
+        _runLoop = IntPtr.Zero;
+        _runLoopThread.Join();
+    }
+
+    private void RunLoopRunThread()
+    {
+        try
+        {
+            RunLoopRun();
+        }
+        catch (Exception ex)
+        {
+            ErrorOccurred?.Invoke(this, new ErrorEventArgs(ex));
+        }
+    }
+
+    private void RunLoopRun()
+    {
+        using var manager = IOHIDManagerCreate(IntPtr.Zero).ToDisposable();
 
         var deviceFilter = GetUsageFilter();
-        IOHIDManagerSetDeviceMatchingMultiple(_manager, deviceFilter);
-
-        var result = IOHIDManagerOpen(_manager);
-        if (result != kIOReturnSuccess)
-        {
-            // TODO: Throw
-        }
+        IOHIDManagerSetDeviceMatchingMultiple(manager, deviceFilter);
 
         var context = GCHandle.ToIntPtr(_gch);
-
         unsafe
         {
-            IOHIDManagerRegisterDeviceMatchingCallback(_manager, &DeviceAddedCallback, context);
-            IOHIDManagerRegisterDeviceRemovalCallback(_manager, &DeviceRemovedCallback, context);
+            IOHIDManagerRegisterDeviceMatchingCallback(manager, &DeviceAddedCallback, context);
+            IOHIDManagerRegisterDeviceRemovalCallback(manager, &DeviceRemovedCallback, context);
         }
 
+        var result = IOHIDManagerOpen(manager);
+        ThrowIfError(result, "Failed to open HID manager");
+
+        _runLoop = CFRunLoopGetCurrent();
+        IOHIDManagerScheduleWithRunLoop(manager, _runLoop, kCFRunLoopDefaultMode);
+
         CFRunLoopRun();
+
+        result = IOHIDManagerClose(manager);
+        ThrowIfError(result, "Failed to close HID manager");
     }
 
-    // public void Stop()
-    // {
-    //     IOHIDManagerUnscheduleFromRunLoop(_manager, _runLoop, kCFRunLoopDefaultMode);
-    // }
+    private static void ThrowIfError(int result, string message)
+    {
+        if (result != kIOReturnSuccess)
+        {
+            throw new JoyPadException(message, result);
+        }
+    }
 
     private static IntPtr GetUsageFilter()
     {
@@ -119,20 +156,6 @@ internal class HidDeviceManager : IDisposable, IDeviceManager
         return false;
     }
 
-    private void ReleaseUnmanagedResources()
-    {
-        if (_manager == IntPtr.Zero)
-        {
-            return;
-        }
-
-        IOHIDManagerUnscheduleFromRunLoop(_manager, _runLoop, kCFRunLoopDefaultMode);
-        _ =IOHIDManagerClose(_manager);
-
-        _manager = IntPtr.Zero;
-        _runLoop = IntPtr.Zero;
-    }
-
     public void Dispose()
     {
         if (_gch.IsAllocated)
@@ -140,12 +163,6 @@ internal class HidDeviceManager : IDisposable, IDeviceManager
             _gch.Free();
         }
 
-        ReleaseUnmanagedResources();
         GC.SuppressFinalize(this);
-    }
-
-    ~HidDeviceManager()
-    {
-        ReleaseUnmanagedResources();
     }
 }

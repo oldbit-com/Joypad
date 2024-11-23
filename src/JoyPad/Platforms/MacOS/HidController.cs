@@ -26,7 +26,7 @@ internal class HidController : Controller
         Id = CreateDeviceUniqueId();
     }
 
-    public override int? GetValue(Control control) => GetValue((HidElement)control);
+    protected override int? GetControlValue(Control control) => GetValue((HidElement)control);
 
     internal void ProcessElements()
     {

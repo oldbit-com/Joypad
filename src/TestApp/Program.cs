@@ -1,30 +1,54 @@
 ﻿using OldBit.JoyPad;
 
-var manager = new ControllerManager();
+var manager = new JoyPadManager();
 
-var currentValues = new Dictionary<Control, int?>();
 
-manager.ControllerConnected += (sender, e) =>
+Controller? currentController = null;
+manager.ControllerConnected += (_, e) =>
 {
+    currentController = e.Controller;
+};
+
+manager.ControllerDisconnected += (_, _) =>
+{
+    currentController = null;
+};
+
+manager.ErrorOccurred += (_, e) =>
+{
+    Console.WriteLine(e.Exception.ToString());
+};
+
+var mainLoop = new Thread(() =>
+{
+    var currentValues = new Dictionary<Control, int?>();
     var dpadValue = DPadDirection.None;
 
     while (true)
+        //while (e.Controller.IsConnected)
     {
         Thread.Sleep(50);
 
-        foreach (var control in e.Controller.Controls)
+        if (currentController is not { IsConnected: true })
         {
-            var xxx = e.Controller.GetDPadValue();
-            if (xxx != dpadValue)
-            {
-                dpadValue = xxx;
-                Console.WriteLine($"DPad: {dpadValue}");
-            }
+            continue;
+        }
 
+        var dpad = currentController.GetDPadValue();
+
+        if (dpad != dpadValue)
+        {
+            dpadValue = dpad;
+
+            Console.WriteLine($"DPad: {dpadValue}");
 
             continue;
+        }
 
-            var value = e.Controller.GetValue(control);
+
+        foreach (var control in currentController.Controls)
+        {
+            var value = currentController.GetValue(control);
 
             if (currentValues.TryGetValue(control, out var currentValue) && currentValue == value)
             {
@@ -36,8 +60,15 @@ manager.ControllerConnected += (sender, e) =>
             Console.WriteLine($"{control}: {value}");
         }
     }
-};
+
+}) { IsBackground = true };
 
 manager.StartListener();
+mainLoop.Start();
+
+
+Console.WriteLine("Started");
 
 Console.ReadLine();
+
+manager.StopListener();

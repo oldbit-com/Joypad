@@ -4,7 +4,7 @@ using OldBit.JoyPad.Platforms.MacOS;
 
 namespace OldBit.JoyPad;
 
-public sealed class ControllerManager : IDisposable
+public sealed class JoyPadManager : IDisposable
 {
     private readonly IDeviceManager? _deviceManager;
 
@@ -12,8 +12,9 @@ public sealed class ControllerManager : IDisposable
 
     public event EventHandler<ControllerEventArgs>? ControllerConnected;
     public event EventHandler<ControllerEventArgs>? ControllerDisconnected;
+    public event EventHandler<ErrorEventArgs>? ErrorOccurred;
 
-    public ControllerManager()
+    public JoyPadManager()
     {
         if (OperatingSystem.IsMacOS())
         {
@@ -35,6 +36,8 @@ public sealed class ControllerManager : IDisposable
 
     public void StartListener() => _deviceManager?.StartListener();
 
+    public void StopListener() => _deviceManager?.StopListener();
+
     [SupportedOSPlatform("macos")]
     private HidDeviceManager CreateMacOSDeviceManager()
     {
@@ -43,6 +46,8 @@ public sealed class ControllerManager : IDisposable
         deviceManager.ControllerAdded += (_, e) =>
         {
             Controllers.Add(e.Controller);
+
+            e.Controller.IsConnected = true;
             ControllerConnected?.Invoke(this, new ControllerEventArgs(e.Controller));
         };
 
@@ -56,8 +61,12 @@ public sealed class ControllerManager : IDisposable
             }
 
             Controllers.Remove(existingController);
+
+            e.Controller.IsConnected = false;
             ControllerDisconnected?.Invoke(this, new ControllerEventArgs(e.Controller));
         };
+
+        deviceManager.ErrorOccurred += (sender, e) => ErrorOccurred?.Invoke(sender, e);
 
         return deviceManager;
     }

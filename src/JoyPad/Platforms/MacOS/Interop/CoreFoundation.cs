@@ -24,6 +24,9 @@ internal static partial class CoreFoundation
     internal static partial void CFRunLoopRun();
 
     [LibraryImport(CoreFoundationLibrary)]
+    internal static partial void CFRunLoopStop(IntPtr runLoop);
+
+    [LibraryImport(CoreFoundationLibrary)]
     internal static partial IntPtr CFNumberCreate(IntPtr allocator, CFNumberType numberType, ref int value);
 
     [LibraryImport(CoreFoundationLibrary)]

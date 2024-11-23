@@ -9,6 +9,7 @@ public abstract class Controller
 
     public Guid Id { get; protected init; } = Guid.Empty;
     public string Name { get; internal set; } = string.Empty;
+    public bool IsConnected { get; internal set; }
 
     internal Controller()
     {
@@ -30,7 +31,10 @@ public abstract class Controller
         };
     }
 
-    public abstract int? GetValue(Control control);
+    public int? GetValue(Control control) =>
+        !IsConnected ? null : GetControlValue(control);
+
+    protected abstract int? GetControlValue(Control control);
 
     public bool HasDPad => _dpad != null;
 
