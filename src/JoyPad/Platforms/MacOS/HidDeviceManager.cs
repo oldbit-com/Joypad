@@ -26,6 +26,7 @@ internal class HidDeviceManager : IDeviceManager
     internal HidDeviceManager()
     {
         _gch = GCHandle.Alloc(this);
+
         _runLoopThread = new Thread(RunLoopRunThread)
         {
             IsBackground = true,
