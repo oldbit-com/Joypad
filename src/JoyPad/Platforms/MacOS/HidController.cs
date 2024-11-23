@@ -1,4 +1,6 @@
 using System.Runtime.Versioning;
+using System.Security.Cryptography;
+using System.Text;
 using OldBit.JoyPad.Platforms.MacOS.Extensions;
 using OldBit.JoyPad.Platforms.MacOS.Interop;
 using static OldBit.JoyPad.Platforms.MacOS.Interop.CoreFoundation;
@@ -42,7 +44,7 @@ internal class HidController : Controller
             BitConverter.GetBytes(vendorId ?? 0).Concat(
                 BitConverter.GetBytes(productId ?? 0)).Concat(
                 BitConverter.GetBytes(version ?? 0)).Concat(
-                BitConverter.GetBytes($"{Name}:{transport}".GetHashCode()));
+                GenerateDeterministicHash($"{Name}:{transport}"));
 
         return new Guid(guidBytes.ToArray());
     }
@@ -141,5 +143,12 @@ internal class HidController : Controller
         }
 
         AddControl((Control)control);
+    }
+
+    private static byte[] GenerateDeterministicHash(string s)
+    {
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(s));
+
+        return bytes[..4];
     }
 }
