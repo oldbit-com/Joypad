@@ -36,7 +36,7 @@ public sealed class JoyPadManager : IDisposable
         }
     }
 
-    public void StartListener()
+    public void Start()
     {
         if (_isStarted)
         {
@@ -47,7 +47,7 @@ public sealed class JoyPadManager : IDisposable
         _isStarted = true;
     }
 
-    public void StopListener()
+    public void Stop()
     {
         if (!_isStarted)
         {
@@ -56,6 +56,19 @@ public sealed class JoyPadManager : IDisposable
 
         _deviceManager?.StopListener();
         _isStarted = false;
+    }
+
+    public void Update()
+    {
+        foreach (var controller in Controllers)
+        {
+
+        }
+    }
+
+    public void GetState(Guid controllerId)
+    {
+
     }
 
     [SupportedOSPlatform("macos")]

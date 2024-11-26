@@ -49,17 +49,29 @@ internal class HidController : Controller
         return new Guid(guidBytes.ToArray());
     }
 
+    private void GetHidElements()
+    {
+        var elements = CFArrayCreateMutable();
+
+        foreach (var element in _elements)
+        {
+            CFArrayAppendValue(elements, element);
+        }
+
+    }
+
     private int? GetValue(HidElement control)
     {
-        var value = IOHIDValueCreateWithIntegerValue(IntPtr.Zero, control.Element, 0, 0);
-
         unsafe
         {
-            var result = IOHIDDeviceGetValue(_device, control.Element, &value);
-
-            if (result == kIOReturnSuccess)
+            fixed (IntPtr* valueRef = &control.ValueRef)
             {
-                return IOHIDValueGetIntegerValue(value);
+                var result = IOHIDDeviceGetValue(_device, control.Element, valueRef);
+
+                if (result == kIOReturnSuccess)
+                {
+                    return IOHIDValueGetIntegerValue(control.ValueRef);
+                }
             }
         }
 

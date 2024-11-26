@@ -1,8 +1,5 @@
-using System.Runtime.Versioning;
-
 namespace OldBit.JoyPad.Platforms.MacOS.Interop;
 
-[SupportedOSPlatform("macos")]
 public enum IOHIDElementType : uint
 {
     Misc = 1,

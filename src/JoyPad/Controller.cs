@@ -31,8 +31,7 @@ public abstract class Controller
         };
     }
 
-    public int? GetValue(Control control) =>
-        !IsConnected ? null : GetControlValue(control);
+    public int? GetValue(Control control) => !IsConnected ? null : GetControlValue(control);
 
     protected abstract int? GetControlValue(Control control);
 

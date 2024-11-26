@@ -1,5 +1,3 @@
-using System.Runtime.Versioning;
-
 namespace OldBit.JoyPad.Platforms.MacOS.Interop;
 
 internal static partial class CoreFoundation

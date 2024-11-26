@@ -1,12 +1,14 @@
 using System.Runtime.Versioning;
+using static OldBit.JoyPad.Platforms.MacOS.Interop.CoreFoundation;
 using static OldBit.JoyPad.Platforms.MacOS.Interop.IOKit;
 
 namespace OldBit.JoyPad.Platforms.MacOS;
 
 [SupportedOSPlatform("macos")]
-internal class HidElement : Control
+internal class HidElement : Control, IDisposable
 {
     internal IntPtr Element { get; }
+    internal IntPtr ValueRef;
     internal uint Cookie { get; }
     internal int Min { get; }
     internal int Max { get; }
@@ -17,6 +19,7 @@ internal class HidElement : Control
         Element = element;
         Usage = usage;
 
+        ValueRef = IOHIDValueCreateWithIntegerValue(IntPtr.Zero, element, 0, 0);
         Cookie = IOHIDElementGetCookie(element);
         Min = IOHIDElementGetLogicalMin(element);
         Max = IOHIDElementGetLogicalMax(element);
@@ -25,9 +28,11 @@ internal class HidElement : Control
         {
             ControlType.Button => $"Button {GetUsageName()}",
             ControlType.Analog => $"Stick {GetUsageName()}",
-            ControlType.Hat => $"D-Pad",
+            ControlType.Hat => "D-Pad",
             _ => string.Empty
         };
+
+        Id = (int)Cookie;
     }
 
     internal static HidElement CreateButton(IntPtr element, uint usage) =>
@@ -51,4 +56,26 @@ internal class HidElement : Control
     };
 
     public override string ToString() => Name;
+
+    private void ReleaseUnmanagedResources()
+    {
+        if (ValueRef == IntPtr.Zero)
+        {
+            return;
+        }
+
+        CFRelease(ValueRef);
+        ValueRef = IntPtr.Zero;
+    }
+
+    public void Dispose()
+    {
+        ReleaseUnmanagedResources();
+        GC.SuppressFinalize(this);
+    }
+
+    ~HidElement()
+    {
+        ReleaseUnmanagedResources();
+    }
 }

@@ -66,6 +66,9 @@ internal static unsafe partial class IOKit
     internal static partial int IOHIDValueGetIntegerValue(IntPtr value);
 
     [LibraryImport(IOKitLibrary)]
+    internal static partial int IOHIDDeviceCopyValueMultiple(IntPtr device, IntPtr elements, IntPtr *values);
+
+    [LibraryImport(IOKitLibrary)]
     internal static partial int IOHIDDeviceGetValue(IntPtr device, IntPtr element, IntPtr *value);
 
     [LibraryImport(IOKitLibrary)]

@@ -39,14 +39,4 @@ internal partial class IOKit
     internal static IntPtr kIOHIDVendorIDKey => CreateOrGet("VendorID", ref _kIOHIDVendorIDKey);
     internal static IntPtr kIOHIDVersionNumberKey => CreateOrGet("VersionNumber", ref _kIOHIDVersionNumberKey);
     internal static IntPtr kIOHIDTransportKey => CreateOrGet("Transport", ref _kIOHIDTransportKey);
-
-    private static IntPtr CreateOrGet(string s, ref IntPtr key)
-    {
-        if (key == IntPtr.Zero)
-        {
-            key = CoreFoundation.CFStringCreateWithCharacters(s);
-        }
-
-        return key;
-    }
 }

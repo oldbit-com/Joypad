@@ -3,15 +3,15 @@
 var manager = new JoyPadManager();
 
 
-Controller? currentController = null;
+Controller? controller = null;
 manager.ControllerConnected += (_, e) =>
 {
-    currentController = e.Controller;
+    controller = e.Controller;
 };
 
 manager.ControllerDisconnected += (_, _) =>
 {
-    currentController = null;
+    controller = null;
 };
 
 manager.ErrorOccurred += (_, e) =>
@@ -29,12 +29,12 @@ var mainLoop = new Thread(() =>
     {
         Thread.Sleep(50);
 
-        if (currentController is not { IsConnected: true })
+        if (controller is not { IsConnected: true })
         {
             continue;
         }
 
-        var dpad = currentController.GetDPadValue();
+        var dpad = controller.GetDPadValue();
 
         if (dpad != dpadValue)
         {
@@ -46,24 +46,24 @@ var mainLoop = new Thread(() =>
         }
 
 
-        foreach (var control in currentController.Controls)
-        {
-            var value = currentController.GetValue(control);
-
-            if (currentValues.TryGetValue(control, out var currentValue) && currentValue == value)
-            {
-                continue;
-            }
-
-            currentValues[control] = value;
-
-            Console.WriteLine($"{control}: {value}");
-        }
+        // foreach (var control in currentController.Controls)
+        // {
+        //     var value = currentController.GetValue(control);
+        //
+        //     if (currentValues.TryGetValue(control, out var currentValue) && currentValue == value)
+        //     {
+        //         continue;
+        //     }
+        //
+        //     currentValues[control] = value;
+        //
+        //     Console.WriteLine($"{control}: {value}");
+        // }
     }
 
 }) { IsBackground = true };
 
-manager.StartListener();
+manager.Start();
 mainLoop.Start();
 
 
@@ -71,4 +71,4 @@ Console.WriteLine("Started");
 
 Console.ReadLine();
 
-manager.StopListener();
+manager.Stop();
