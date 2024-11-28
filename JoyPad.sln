@@ -4,7 +4,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B8C5C7DA-BB8
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JoyPad", "src\JoyPad\JoyPad.csproj", "{8FF3ACA9-0E56-4473-8C0F-7FD7BA22CDDE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "src\TestApp\TestApp.csproj", "{4A8985FE-01F9-42C0-9702-D62DB1C872D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoApp", "src\DemoApp\DemoApp.csproj", "{4A8985FE-01F9-42C0-9702-D62DB1C872D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

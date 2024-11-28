@@ -100,27 +100,6 @@ internal class HidDeviceManager : IDeviceManager
         }
     }
 
-    private static IntPtr GetUsageFilter()
-    {
-        var filters = CFArrayCreateMutable();
-
-        AddUsageFilter(filters, kHIDPage_GenericDesktop, kHIDUsage_GD_GamePad);
-        AddUsageFilter(filters, kHIDPage_GenericDesktop, kHIDUsage_GD_Joystick);
-        AddUsageFilter(filters, kHIDPage_GenericDesktop, kHIDUsage_GD_MultiAxisController);
-
-        return filters;
-    }
-
-    private static void AddUsageFilter(IntPtr filters, int usagePage, int usage)
-    {
-        var filter = CFDictionaryCreateMutable();
-
-        CFDictionaryAddValue(filter, kIOHIDDeviceUsagePageKey, usagePage);
-        CFDictionaryAddValue(filter, kIOHIDDeviceUsageKey, usage);
-
-        CFArrayAppendValue(filters, filter);
-    }
-
     [UnmanagedCallersOnly]
     private static void DeviceAddedCallback(IntPtr context, int result, IntPtr sender, IntPtr device)
     {
@@ -130,7 +109,9 @@ internal class HidDeviceManager : IDeviceManager
         }
 
         var controller = new HidController(device);
+
         controller.ProcessElements();
+        controller.Initialize();
 
         deviceManager.ControllerAdded?.Invoke(deviceManager, new ControllerEventArgs(controller));
     }
@@ -160,6 +141,27 @@ internal class HidDeviceManager : IDeviceManager
 
         deviceManager = null;
         return false;
+    }
+
+    private static IntPtr GetUsageFilter()
+    {
+        var filters = CFArrayCreateMutable();
+
+        AddUsageFilter(filters, kHIDPage_GenericDesktop, kHIDUsage_GD_GamePad);
+        AddUsageFilter(filters, kHIDPage_GenericDesktop, kHIDUsage_GD_Joystick);
+        AddUsageFilter(filters, kHIDPage_GenericDesktop, kHIDUsage_GD_MultiAxisController);
+
+        return filters;
+    }
+
+    private static void AddUsageFilter(IntPtr filters, int usagePage, int usage)
+    {
+        var filter = CFDictionaryCreateMutable();
+
+        CFDictionaryAddValue(filter, kIOHIDDeviceUsagePageKey, usagePage);
+        CFDictionaryAddValue(filter, kIOHIDDeviceUsageKey, usage);
+
+        CFArrayAppendValue(filters, filter);
     }
 
     public void Dispose()

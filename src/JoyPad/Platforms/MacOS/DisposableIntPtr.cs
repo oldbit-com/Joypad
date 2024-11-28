@@ -6,21 +6,21 @@ namespace OldBit.JoyPad.Platforms.MacOS;
 [SupportedOSPlatform("macos")]
 internal readonly struct DisposableIntPtr : IDisposable
 {
-    internal readonly IntPtr Ptr = IntPtr.Zero;
+    private readonly IntPtr _ptr = IntPtr.Zero;
 
-    internal DisposableIntPtr(IntPtr ptr) => Ptr = ptr;
+    internal DisposableIntPtr(IntPtr ptr) => _ptr = ptr;
 
-    public static implicit operator IntPtr(DisposableIntPtr ptr) => ptr.Ptr;
+    public static implicit operator IntPtr(DisposableIntPtr ptr) => ptr._ptr;
 
     public static implicit operator DisposableIntPtr(IntPtr ptr) => new(ptr);
 
     public void Dispose()
     {
-        if (Ptr == IntPtr.Zero)
+        if (_ptr == IntPtr.Zero)
         {
             return;
         }
 
-        CFRelease(Ptr);
+        CFRelease(_ptr);
     }
 }

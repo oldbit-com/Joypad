@@ -6,5 +6,9 @@ public abstract class Control(ControlType controlType)
 
     public int Id { get; protected set; }
 
-    public string Name { get; protected set; } = string.Empty;
+    public string Name { get; protected init; } = string.Empty;
+
+    public int? Value { get; internal set; }
+
+    public bool IsPressed => Value > 0;
 }

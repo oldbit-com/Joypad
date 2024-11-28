@@ -2,9 +2,18 @@ namespace OldBit.JoyPad;
 
 public enum ControlType
 {
+    /// <summary>
+    /// A button control.
+    /// </summary>
     Button,
 
-    Analog,
+    /// <summary>
+    /// A thumbstick control.
+    /// </summary>
+    ThumbStick,
 
-    Hat
+    /// <summary>
+    /// A directional pad control (D-Pad).
+    /// </summary>
+    DirectionalPad
 }

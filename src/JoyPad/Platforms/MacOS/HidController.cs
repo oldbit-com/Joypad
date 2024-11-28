@@ -9,7 +9,7 @@ using static OldBit.JoyPad.Platforms.MacOS.Interop.IOKit;
 namespace OldBit.JoyPad.Platforms.MacOS;
 
 [SupportedOSPlatform("macos")]
-internal class HidController : Controller
+internal class HidController : JoyPadController
 {
     private readonly IntPtr _device;
     private readonly HashSet<IntPtr> _elements = [];
@@ -24,7 +24,20 @@ internal class HidController : Controller
         Id = CreateDeviceUniqueId();
     }
 
-    protected override int? GetControlValue(Control control) => GetValue((HidElement)control);
+    protected override int? GetValue(Control control) => ((HidElement)control).GetValue();
+
+    protected override DirectionalPadDirection GetDirectionalPadDirection(int value) => value switch
+    {
+        0 => DirectionalPadDirection.Up,
+        1 => DirectionalPadDirection.Up | DirectionalPadDirection.Right,
+        2 => DirectionalPadDirection.Right,
+        3 => DirectionalPadDirection.Down | DirectionalPadDirection.Right,
+        4 => DirectionalPadDirection.Down,
+        5 => DirectionalPadDirection.Down | DirectionalPadDirection.Left,
+        6 => DirectionalPadDirection.Left,
+        7 => DirectionalPadDirection.Up | DirectionalPadDirection.Left,
+        _ => DirectionalPadDirection.None
+    };
 
     internal void ProcessElements()
     {
@@ -47,35 +60,6 @@ internal class HidController : Controller
                 GenerateDeterministicHash($"{Name}:{transport}"));
 
         return new Guid(guidBytes.ToArray());
-    }
-
-    private void GetHidElements()
-    {
-        var elements = CFArrayCreateMutable();
-
-        foreach (var element in _elements)
-        {
-            CFArrayAppendValue(elements, element);
-        }
-
-    }
-
-    private int? GetValue(HidElement control)
-    {
-        unsafe
-        {
-            fixed (IntPtr* valueRef = &control.ValueRef)
-            {
-                var result = IOHIDDeviceGetValue(_device, control.Element, valueRef);
-
-                if (result == kIOReturnSuccess)
-                {
-                    return IOHIDValueGetIntegerValue(control.ValueRef);
-                }
-            }
-        }
-
-        return null;
     }
 
     private void ProcessElements(IntPtr elements)
@@ -116,13 +100,13 @@ internal class HidController : Controller
                                 case kHIDUsage_GD_Rx:
                                 case kHIDUsage_GD_Ry:
                                 case kHIDUsage_GD_Rz:
-                                    control = HidElement.CreateAnalog(element, usage);
+                                    control = HidElement.CreateAnalog(_device, element, usage);
                                     AddControl(control);
 
                                     break;
 
                                 case kHIDUsage_GD_Hatswitch:
-                                    control = HidElement.CreateHat(element, usage);
+                                    control = HidElement.CreateHat(_device, element, usage);
                                     AddControl(control);
 
                                     break;
@@ -130,7 +114,7 @@ internal class HidController : Controller
                             break;
 
                         case kHIDPage_Button:
-                            control = HidElement.CreateButton(element, usage);
+                            control = HidElement.CreateButton(_device, element, usage);
                             AddControl(control);
 
                             break;

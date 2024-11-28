@@ -7,42 +7,62 @@ namespace OldBit.JoyPad.Platforms.MacOS;
 [SupportedOSPlatform("macos")]
 internal class HidElement : Control, IDisposable
 {
-    internal IntPtr Element { get; }
-    internal IntPtr ValueRef;
-    internal uint Cookie { get; }
-    internal int Min { get; }
-    internal int Max { get; }
-    internal uint Usage { get; }
+    private readonly IntPtr _device;
 
-    private HidElement(ControlType controlType, IntPtr element, uint usage) : base(controlType)
+    internal IntPtr Element { get; }
+
+    private IntPtr _valueRef;
+    private int Min { get; }
+    private int Max { get; }
+    private uint Usage { get; }
+
+    private HidElement(
+        IntPtr device,
+        ControlType controlType,
+        IntPtr element,
+        uint usage) : base(controlType)
     {
+        _device = device;
+        _valueRef = IOHIDValueCreateWithIntegerValue(IntPtr.Zero, element, 0, 0);
+
         Element = element;
         Usage = usage;
 
-        ValueRef = IOHIDValueCreateWithIntegerValue(IntPtr.Zero, element, 0, 0);
-        Cookie = IOHIDElementGetCookie(element);
+        Id = (int)IOHIDElementGetCookie(element);;
         Min = IOHIDElementGetLogicalMin(element);
         Max = IOHIDElementGetLogicalMax(element);
 
-        Name = ControlType switch
-        {
-            ControlType.Button => $"Button {GetUsageName()}",
-            ControlType.Analog => $"Stick {GetUsageName()}",
-            ControlType.Hat => "D-Pad",
-            _ => string.Empty
-        };
-
-        Id = (int)Cookie;
+        Name = GetName();
     }
 
-    internal static HidElement CreateButton(IntPtr element, uint usage) =>
-        new(ControlType.Button, element, usage);
+    internal static HidElement CreateButton(IntPtr device, IntPtr element, uint usage) =>
+        new(device, ControlType.Button, element, usage);
 
-    internal static HidElement CreateHat(IntPtr element, uint usage) =>
-        new(ControlType.Hat, element, usage);
+    internal static HidElement CreateHat(IntPtr device, IntPtr element, uint usage) =>
+        new(device, ControlType.DirectionalPad, element, usage);
 
-    internal static HidElement CreateAnalog(IntPtr element, uint usage) =>
-        new(ControlType.Analog, element, usage);
+    internal static HidElement CreateAnalog(IntPtr device, IntPtr element, uint usage) =>
+        new(device, ControlType.ThumbStick, element, usage);
+
+    internal int? GetValue()
+    {
+        int result;
+
+        unsafe
+        {
+            fixed (IntPtr* valueRef = &_valueRef)
+            {
+                result = IOHIDDeviceGetValue(_device, Element, valueRef);
+            }
+        }
+
+        if (result == kIOReturnSuccess)
+        {
+            return IOHIDValueGetIntegerValue(_valueRef);
+        }
+
+        return null;
+    }
 
     private string GetUsageName() => Usage switch
     {
@@ -55,17 +75,23 @@ internal class HidElement : Control, IDisposable
         _ => Usage.ToString()
     };
 
-    public override string ToString() => Name;
+    private string GetName() => ControlType switch
+    {
+        ControlType.Button => $"Button {GetUsageName()}",
+        ControlType.ThumbStick => $"Thumb Stick {GetUsageName()}",
+        ControlType.DirectionalPad => "Directional Pad",
+        _ => string.Empty
+    };
 
     private void ReleaseUnmanagedResources()
     {
-        if (ValueRef == IntPtr.Zero)
+        if (_valueRef == IntPtr.Zero)
         {
             return;
         }
 
-        CFRelease(ValueRef);
-        ValueRef = IntPtr.Zero;
+        CFRelease(_valueRef);
+        _valueRef = IntPtr.Zero;
     }
 
     public void Dispose()
@@ -78,4 +104,6 @@ internal class HidElement : Control, IDisposable
     {
         ReleaseUnmanagedResources();
     }
+
+    public override string ToString() => Name;
 }
