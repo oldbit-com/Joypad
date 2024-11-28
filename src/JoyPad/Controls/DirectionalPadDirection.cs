@@ -1,4 +1,4 @@
-namespace OldBit.JoyPad;
+namespace OldBit.JoyPad.Controls;
 
 /// <summary>
 /// Lists the possible directions of a DPad.

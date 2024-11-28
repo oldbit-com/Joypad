@@ -1,9 +1,10 @@
+using OldBit.JoyPad.Controls;
+
 namespace OldBit.JoyPad;
 
 public abstract class JoyPadController
 {
     private readonly List<Control> _controls = [];
-    private Control? _dpad;
 
     /// <summary>
     /// Occurs when a control value changes.
@@ -32,23 +33,6 @@ public abstract class JoyPadController
 
     internal JoyPadController()
     {
-    }
-
-    public DirectionalPadDirection DirectionalPadDirection
-    {
-        get
-        {
-            if (_dpad == null)
-            {
-                return DirectionalPadDirection.None;
-            }
-
-            var value = GetValue(_dpad);
-
-            return value == null ?
-                DirectionalPadDirection.None :
-                GetDirectionalPadDirection(value.Value);
-        }
     }
 
     internal void Update(Control control)
@@ -80,17 +64,5 @@ public abstract class JoyPadController
 
     protected abstract int? GetValue(Control control);
 
-    protected abstract DirectionalPadDirection GetDirectionalPadDirection(int value);
-
-    public bool HasDPad => _dpad != null;
-
-    internal void AddControl(Control control)
-    {
-        _controls.Add(control);
-
-        if (control.ControlType == ControlType.DirectionalPad)
-        {
-            _dpad = control;
-        }
-    }
+    internal void AddControl(Control control) => _controls.Add(control);
 }

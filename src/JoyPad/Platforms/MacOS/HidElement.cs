@@ -1,4 +1,5 @@
 using System.Runtime.Versioning;
+using OldBit.JoyPad.Controls;
 using static OldBit.JoyPad.Platforms.MacOS.Interop.CoreFoundation;
 using static OldBit.JoyPad.Platforms.MacOS.Interop.IOKit;
 

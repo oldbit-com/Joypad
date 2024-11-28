@@ -1,4 +1,5 @@
 ﻿using OldBit.JoyPad;
+using OldBit.JoyPad.Controls;
 
 var manager = new JoyPadManager();
 

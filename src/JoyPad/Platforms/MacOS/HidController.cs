@@ -1,6 +1,7 @@
 using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Text;
+using OldBit.JoyPad.Controls;
 using OldBit.JoyPad.Platforms.MacOS.Extensions;
 using OldBit.JoyPad.Platforms.MacOS.Interop;
 using static OldBit.JoyPad.Platforms.MacOS.Interop.CoreFoundation;
@@ -24,9 +25,19 @@ internal class HidController : JoyPadController
         Id = CreateDeviceUniqueId();
     }
 
-    protected override int? GetValue(Control control) => ((HidElement)control).GetValue();
+    protected override int? GetValue(Control control)
+    {
+        var value = ((HidElement)control).GetValue();
 
-    protected override DirectionalPadDirection GetDirectionalPadDirection(int value) => value switch
+        if (control.ControlType == ControlType.DirectionalPad)
+        {
+            return (int)GetDirectionalPadDirection(value);
+        }
+
+        return value;
+    }
+
+    private DirectionalPadDirection GetDirectionalPadDirection(int? value) => value switch
     {
         0 => DirectionalPadDirection.Up,
         1 => DirectionalPadDirection.Up | DirectionalPadDirection.Right,

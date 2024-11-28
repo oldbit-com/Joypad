@@ -1,4 +1,4 @@
-namespace OldBit.JoyPad;
+namespace OldBit.JoyPad.Controls;
 
 public enum ControlType
 {
