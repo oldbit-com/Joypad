@@ -37,7 +37,7 @@ internal class HidController : JoypadController
         return value;
     }
 
-    private DirectionalPadDirection GetDirectionalPadDirection(int? value) => value switch
+    private static DirectionalPadDirection GetDirectionalPadDirection(int? value) => value switch
     {
         0 => DirectionalPadDirection.Up,
         1 => DirectionalPadDirection.Up | DirectionalPadDirection.Right,
