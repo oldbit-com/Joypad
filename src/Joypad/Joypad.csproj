@@ -14,11 +14,7 @@
         <PackageProjectUrl>https://github.com/oldbit-com/Joypad</PackageProjectUrl>
         <RepositoryUrl>https://github.com/oldbit-com/Joypad</RepositoryUrl>
     </PropertyGroup>
-
-    <ItemGroup>
-      <PackageReference Include="HidSharp" Version="2.1.0" />
-    </ItemGroup>
-
+    
     <ItemGroup>
       <Folder Include="Platforms\Linux\" />
       <Folder Include="Platforms\Windows\" />
