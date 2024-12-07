@@ -7,6 +7,12 @@
         <AssemblyName>OldBit.Joypad</AssemblyName>
         <RootNamespace>OldBit.Joypad</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Version>0.0.1</Version>
+        <Title>OldBit.Joypad</Title>
+        <Authors>Wojciech Sobieszek</Authors>
+        <Description>Simple cross-platform library for gamepad and joystick support. Uses native frameworks for communicating with input devices,</Description>
+        <PackageProjectUrl>https://github.com/oldbit-com/Joypad</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/oldbit-com/Joypad</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
