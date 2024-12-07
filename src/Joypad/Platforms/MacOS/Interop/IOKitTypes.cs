@@ -1,4 +1,4 @@
-namespace OldBit.JoyPad.Platforms.MacOS.Interop;
+namespace OldBit.Joypad.Platforms.MacOS.Interop;
 
 public enum IOHIDElementType : uint
 {

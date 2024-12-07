@@ -1,7 +1,7 @@
 using System.Runtime.Versioning;
-using static OldBit.JoyPad.Platforms.MacOS.Interop.CoreFoundation;
+using static OldBit.Joypad.Platforms.MacOS.Interop.CoreFoundation;
 
-namespace OldBit.JoyPad.Platforms.MacOS;
+namespace OldBit.Joypad.Platforms.MacOS;
 
 [SupportedOSPlatform("macos")]
 internal readonly struct DisposableIntPtr : IDisposable

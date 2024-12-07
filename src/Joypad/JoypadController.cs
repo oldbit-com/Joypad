@@ -1,10 +1,12 @@
-using OldBit.JoyPad.Controls;
+using System.Diagnostics.CodeAnalysis;
+using OldBit.Joypad.Controls;
 
-namespace OldBit.JoyPad;
+namespace OldBit.Joypad;
 
-public abstract class JoyPadController
+public abstract class JoypadController
 {
     private readonly List<Control> _controls = [];
+    private readonly Dictionary<int, Control> _controlsById = [];
 
     /// <summary>
     /// Occurs when a control value changes.
@@ -31,7 +33,7 @@ public abstract class JoyPadController
     /// </summary>
     public bool IsConnected { get; internal set; }
 
-    internal JoyPadController()
+    internal JoypadController()
     {
     }
 
@@ -54,6 +56,9 @@ public abstract class JoyPadController
         ValueChanged?.Invoke(this, new ControlEventArgs(control));
     }
 
+    public bool TryGetControl(int controlId, [NotNullWhen(true)] out Control? control) =>
+        _controlsById.TryGetValue(controlId, out  control);
+
     internal void Initialize()
     {
         foreach (var control in _controls)
@@ -64,5 +69,9 @@ public abstract class JoyPadController
 
     protected abstract int? GetValue(Control control);
 
-    internal void AddControl(Control control) => _controls.Add(control);
+    internal void AddControl(Control control)
+    {
+        _controls.Add(control);
+        _controlsById[control.Id] = control;
+    }
 }

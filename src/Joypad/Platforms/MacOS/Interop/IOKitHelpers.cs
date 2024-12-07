@@ -1,4 +1,4 @@
-namespace OldBit.JoyPad.Platforms.MacOS.Interop;
+namespace OldBit.Joypad.Platforms.MacOS.Interop;
 
 internal partial class IOKit
 {

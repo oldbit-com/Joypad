@@ -4,8 +4,8 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyName>OldBit.JoyPad</AssemblyName>
-        <RootNamespace>OldBit.JoyPad</RootNamespace>
+        <AssemblyName>OldBit.Joypad</AssemblyName>
+        <RootNamespace>OldBit.Joypad</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 

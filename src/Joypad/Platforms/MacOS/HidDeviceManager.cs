@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
-using static OldBit.JoyPad.Platforms.MacOS.Interop.CoreFoundation;
-using static OldBit.JoyPad.Platforms.MacOS.Interop.IOKit;
+using static OldBit.Joypad.Platforms.MacOS.Interop.CoreFoundation;
+using static OldBit.Joypad.Platforms.MacOS.Interop.IOKit;
 
-namespace OldBit.JoyPad.Platforms.MacOS;
+namespace OldBit.Joypad.Platforms.MacOS;
 
 internal class ControllerEventArgs(HidController controller) : EventArgs
 {
@@ -96,7 +96,7 @@ internal class HidDeviceManager : IDeviceManager
     {
         if (result != kIOReturnSuccess)
         {
-            throw new JoyPadException(message, result);
+            throw new JoypadException(message, result);
         }
     }
 

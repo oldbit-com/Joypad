@@ -1,9 +1,9 @@
 using System.Runtime.Versioning;
-using OldBit.JoyPad.Controls;
-using static OldBit.JoyPad.Platforms.MacOS.Interop.CoreFoundation;
-using static OldBit.JoyPad.Platforms.MacOS.Interop.IOKit;
+using OldBit.Joypad.Controls;
+using static OldBit.Joypad.Platforms.MacOS.Interop.CoreFoundation;
+using static OldBit.Joypad.Platforms.MacOS.Interop.IOKit;
 
-namespace OldBit.JoyPad.Platforms.MacOS;
+namespace OldBit.Joypad.Platforms.MacOS;
 
 [SupportedOSPlatform("macos")]
 internal class HidElement : Control, IDisposable

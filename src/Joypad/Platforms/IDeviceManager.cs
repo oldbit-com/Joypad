@@ -1,4 +1,4 @@
-namespace OldBit.JoyPad.Platforms;
+namespace OldBit.Joypad.Platforms;
 
 internal interface IDeviceManager : IDisposable
 {

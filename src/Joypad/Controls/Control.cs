@@ -1,4 +1,4 @@
-namespace OldBit.JoyPad.Controls;
+namespace OldBit.Joypad.Controls;
 
 public abstract class Control(ControlType controlType)
 {

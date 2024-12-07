@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace OldBit.JoyPad.Platforms.MacOS.Interop;
+namespace OldBit.Joypad.Platforms.MacOS.Interop;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 internal partial class IOKit

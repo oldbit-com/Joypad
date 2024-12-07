@@ -1,8 +1,8 @@
 using System.Runtime.Versioning;
-using OldBit.JoyPad.Platforms.MacOS.Interop;
-using static OldBit.JoyPad.Platforms.MacOS.Interop.CoreFoundation;
+using OldBit.Joypad.Platforms.MacOS.Interop;
+using static OldBit.Joypad.Platforms.MacOS.Interop.CoreFoundation;
 
-namespace OldBit.JoyPad.Platforms.MacOS.Extensions;
+namespace OldBit.Joypad.Platforms.MacOS.Extensions;
 
 [SupportedOSPlatform("macos")]
 internal static class IntPtrExtensions

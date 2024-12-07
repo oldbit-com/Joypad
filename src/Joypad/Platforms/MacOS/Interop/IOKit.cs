@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 
-namespace OldBit.JoyPad.Platforms.MacOS.Interop;
+namespace OldBit.Joypad.Platforms.MacOS.Interop;
 
 [SupportedOSPlatform("macos")]
 internal static unsafe partial class IOKit

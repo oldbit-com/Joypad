@@ -1,4 +1,4 @@
-namespace OldBit.JoyPad;
+namespace OldBit.Joypad;
 
 public class ErrorEventArgs(Exception exception) : EventArgs
 {

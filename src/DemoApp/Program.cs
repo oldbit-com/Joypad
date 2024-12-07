@@ -1,9 +1,9 @@
-﻿using OldBit.JoyPad;
-using OldBit.JoyPad.Controls;
+﻿using OldBit.Joypad;
+using OldBit.Joypad.Controls;
 
-var manager = new JoyPadManager();
+var manager = new JoypadManager();
 
-JoyPadController? controller = null;
+JoypadController? controller = null;
 manager.ControllerConnected += (_, e) =>
 {
     Console.WriteLine($"Connected: {e.Controller.Name} / {e.Controller.Id}");

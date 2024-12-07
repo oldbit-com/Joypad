@@ -1,16 +1,16 @@
 using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Text;
-using OldBit.JoyPad.Controls;
-using OldBit.JoyPad.Platforms.MacOS.Extensions;
-using OldBit.JoyPad.Platforms.MacOS.Interop;
-using static OldBit.JoyPad.Platforms.MacOS.Interop.CoreFoundation;
-using static OldBit.JoyPad.Platforms.MacOS.Interop.IOKit;
+using OldBit.Joypad.Controls;
+using OldBit.Joypad.Platforms.MacOS.Extensions;
+using OldBit.Joypad.Platforms.MacOS.Interop;
+using static OldBit.Joypad.Platforms.MacOS.Interop.CoreFoundation;
+using static OldBit.Joypad.Platforms.MacOS.Interop.IOKit;
 
-namespace OldBit.JoyPad.Platforms.MacOS;
+namespace OldBit.Joypad.Platforms.MacOS;
 
 [SupportedOSPlatform("macos")]
-internal class HidController : JoyPadController
+internal class HidController : JoypadController
 {
     private readonly IntPtr _device;
     private readonly HashSet<IntPtr> _elements = [];

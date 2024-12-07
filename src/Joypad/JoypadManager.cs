@@ -1,23 +1,24 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Versioning;
-using OldBit.JoyPad.Platforms;
-using OldBit.JoyPad.Platforms.MacOS;
+using OldBit.Joypad.Platforms;
+using OldBit.Joypad.Platforms.MacOS;
 
-namespace OldBit.JoyPad;
+namespace OldBit.Joypad;
 
-public sealed class JoyPadManager : IDisposable
+public sealed class JoypadManager : IDisposable
 {
     private readonly IDeviceManager? _deviceManager;
-    private readonly List<JoyPadController> _controllers = [];
+    private readonly List<JoypadController> _controllers = [];
 
     private bool _isStarted;
 
-    public IReadOnlyList<JoyPadController> Controllers => _controllers;
+    public IReadOnlyList<JoypadController> Controllers => _controllers;
 
-    public event EventHandler<JoyPadControllerEventArgs>? ControllerConnected;
-    public event EventHandler<JoyPadControllerEventArgs>? ControllerDisconnected;
+    public event EventHandler<JoypadControllerEventArgs>? ControllerConnected;
+    public event EventHandler<JoypadControllerEventArgs>? ControllerDisconnected;
     public event EventHandler<ErrorEventArgs>? ErrorOccurred;
 
-    public JoyPadManager()
+    public JoypadManager()
     {
         if (OperatingSystem.IsMacOS())
         {
@@ -74,6 +75,13 @@ public sealed class JoyPadManager : IDisposable
         }
     }
 
+    public bool TryGetController(Guid controllerId, [NotNullWhen(true)] out JoypadController? controller)
+    {
+        controller = Controllers.FirstOrDefault(c => c.Id == controllerId);
+
+        return controller != null;
+    }
+
     [SupportedOSPlatform("macos")]
     private HidDeviceManager CreateMacOSDeviceManager()
     {
@@ -84,7 +92,7 @@ public sealed class JoyPadManager : IDisposable
             _controllers.Add(e.Controller);
 
             e.Controller.IsConnected = true;
-            ControllerConnected?.Invoke(this, new JoyPadControllerEventArgs(e.Controller));
+            ControllerConnected?.Invoke(this, new JoypadControllerEventArgs(e.Controller));
         };
 
         deviceManager.ControllerRemoved += (_, e) =>
@@ -99,7 +107,7 @@ public sealed class JoyPadManager : IDisposable
             _controllers.Remove(existingController);
 
             e.Controller.IsConnected = false;
-            ControllerDisconnected?.Invoke(this, new JoyPadControllerEventArgs(e.Controller));
+            ControllerDisconnected?.Invoke(this, new JoypadControllerEventArgs(e.Controller));
         };
 
         deviceManager.ErrorOccurred += (sender, e) => ErrorOccurred?.Invoke(sender, e);
