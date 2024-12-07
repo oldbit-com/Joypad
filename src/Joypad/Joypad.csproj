@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>OldBit.Joypad</AssemblyName>
+        <RootNamespace>OldBit.Joypad</RootNamespace>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="HidSharp" Version="2.1.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Platforms\Linux\" />
+      <Folder Include="Platforms\Windows\" />
+    </ItemGroup>
+
+</Project>
