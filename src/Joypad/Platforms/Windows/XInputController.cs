@@ -1,6 +1,6 @@
-﻿using OldBit.Joypad.Controls;
+﻿using System.Runtime.Versioning;
+using OldBit.Joypad.Controls;
 using OldBit.Joypad.Platforms.Windows.Interop;
-using System.Runtime.Versioning;
 using static OldBit.Joypad.Platforms.Windows.Interop.XInput;
 
 namespace OldBit.Joypad.Platforms.Windows;
@@ -8,9 +8,15 @@ namespace OldBit.Joypad.Platforms.Windows;
 [SupportedOSPlatform("windows")]
 internal class XInputController : JoypadController
 {
+    private const int LeftThumbX = 0x800001;
+    private const int LeftThumbY = 0x800002;
+    private const int RightThumbX = 0x800003;
+    private const int RightThumbY = 0x800004;
+    private const int LeftTrigger = 0x800005;
+    private const int RightTrigger = 0x800006;
+
     private readonly int _controllerIndex;
     private readonly XInputCapabilities _capabilities;
-    private readonly HashSet<Control> _controls = [];
 
     private XInputGamepad? _state = null;
 
@@ -32,122 +38,170 @@ internal class XInputController : JoypadController
             return null;
         }
 
-        // Retrieve the value of the control from the current state
+        switch (control.Id)
+        {
+            case XInputGamepadDPadUp:
+            case XInputGamepadDPadDown:
+            case XInputGamepadDPadLeft:
+            case XInputGamepadDPadRight:
+            case XInputGamepadStart:
+            case XInputGamepadBack:
+            case XInputGamepadLeftThumb:
+            case XInputGamepadRightThumb:
+            case XInputGamepadLeftShoulder:
+            case XInputGamepadRightShoulder:
+            case XInputGamepadA:
+            case XInputGamepadB:
+            case XInputGamepadX:
+            case XInputGamepadY:
+                return GetButtonValue(XInputGamepadDPadUp);
 
-        return null;
+            case LeftThumbX:
+                return _state.Value.ThumbLX;
+
+            case LeftThumbY:
+                return _state.Value.ThumbLY;
+
+            case RightThumbX:
+                return _state.Value.ThumbRX;
+
+            case RightThumbY:
+                return _state.Value.ThumbRY;
+
+            case LeftTrigger:
+                return _state.Value.LeftTrigger;
+
+            case RightTrigger:
+                return _state.Value.RightTrigger;
+
+            default:
+                return null;
+
+        }
     }
 
-    protected override void UpdateState() =>
-        _state = GetState(_controllerIndex);
+    protected override void UpdateState() => _state = GetState(_controllerIndex);
 
     private void AddControls(XInputCapabilities capabilities)
     {
         if (HasButton(capabilities.Gamepad, XInputGamepadDPadUp))
         {
-            var control = XInputControl.CreateButton(XInputGamepadDPadUp, "Directional Pad", DirectionalPadDirection.Up);
-            _controls.Add(control);
+            var control = XInputControl.CreateDirectionalPad(XInputGamepadDPadUp, "Directional Pad", DirectionalPadDirection.Up);
+            AddControl(control);
         }
 
         if (HasButton(capabilities.Gamepad, XInputGamepadDPadDown))
         {
-            var control = XInputControl.CreateButton(XInputGamepadDPadDown, "Directional Pad", DirectionalPadDirection.Down);
-            _controls.Add(control);
+            var control = XInputControl.CreateDirectionalPad(XInputGamepadDPadDown, "Directional Pad", DirectionalPadDirection.Down);
+            AddControl(control);
         }
 
         if (HasButton(capabilities.Gamepad, XInputGamepadDPadLeft))
         {
-            var control = XInputControl.CreateButton(XInputGamepadDPadLeft, "Directional Pad", DirectionalPadDirection.Left);
-            _controls.Add(control);
+            var control = XInputControl.CreateDirectionalPad(XInputGamepadDPadLeft, "Directional Pad", DirectionalPadDirection.Left);
+            AddControl(control);
         }
 
         if (HasButton(capabilities.Gamepad, XInputGamepadDPadRight))
         {
-            var control = XInputControl.CreateButton(XInputGamepadDPadRight, "Directional Pad", DirectionalPadDirection.Right);
-            _controls.Add(control);
+            var control = XInputControl.CreateDirectionalPad(XInputGamepadDPadRight, "Directional Pad", DirectionalPadDirection.Right);
+            AddControl(control);
         }
 
         if (HasButton(capabilities.Gamepad, XInputGamepadStart))
         {
             var control = XInputControl.CreateButton(XInputGamepadStart, "Start");
-            _controls.Add(control);
+            AddControl(control);
         }
 
         if (HasButton(capabilities.Gamepad, XInputGamepadBack))
         {
             var control = XInputControl.CreateButton(XInputGamepadBack, "Back");
-            _controls.Add(control);
+            AddControl(control);
         }
 
         if (HasButton(capabilities.Gamepad, XInputGamepadLeftThumb))
         {
             var control = XInputControl.CreateButton(XInputGamepadLeftThumb, "Left Thumb");
-            _controls.Add(control);
+            AddControl(control);
         }
 
         if (HasButton(capabilities.Gamepad, XInputGamepadRightThumb))
         {
             var control = XInputControl.CreateButton(XInputGamepadRightThumb, "Right Thumb");
-            _controls.Add(control);
+            AddControl(control);
         }
 
         if (HasButton(capabilities.Gamepad, XInputGamepadLeftShoulder))
         {
             var control = XInputControl.CreateButton(XInputGamepadLeftShoulder, "Left Shoulder");
-            _controls.Add(control);
+            AddControl(control);
         }
 
         if (HasButton(capabilities.Gamepad, XInputGamepadRightShoulder))
         {
             var control = XInputControl.CreateButton(XInputGamepadRightShoulder, "Right Shoulder");
-            _controls.Add(control);
+            AddControl(control);
         }
 
         if (HasButton(capabilities.Gamepad, XInputGamepadA))
         {
             var control = XInputControl.CreateButton(XInputGamepadA, "A");
-            _controls.Add(control);
+            AddControl(control);
         }
 
         if (HasButton(capabilities.Gamepad, XInputGamepadB))
         {
             var control = XInputControl.CreateButton(XInputGamepadB, "B");
-            _controls.Add(control);
+            AddControl(control);
         }
 
         if (HasButton(capabilities.Gamepad, XInputGamepadX))
         {
             var control = XInputControl.CreateButton(XInputGamepadX, "X");
-            _controls.Add(control);
+            AddControl(control);
         }
 
         if (HasButton(capabilities.Gamepad, XInputGamepadY))
         {
             var control = XInputControl.CreateButton(XInputGamepadY, "Y");
-            _controls.Add(control);
+            AddControl(control);
         }
 
         if (capabilities.Gamepad.ThumbLX != 0)
         {
-            var control = XInputControl.CreateThumbStick(0x800001, "Left Thumb X");
-            _controls.Add(control);
+            var control = XInputControl.CreateThumbStick(LeftThumbX, "Left Thumb X");
+            AddControl(control);
         }
 
         if (capabilities.Gamepad.ThumbLY != 0)
         {
-            var control = XInputControl.CreateThumbStick(0x800002, "Left Thumb Y");
-            _controls.Add(control);
+            var control = XInputControl.CreateThumbStick(LeftThumbY, "Left Thumb Y");
+            AddControl(control);
         }
 
         if (capabilities.Gamepad.ThumbRX != 0)
         {
-            var control = XInputControl.CreateThumbStick(0x800003, "Right Thumb X");
-            _controls.Add(control);
+            var control = XInputControl.CreateThumbStick(RightThumbX, "Right Thumb X");
+            AddControl(control);
         }
 
         if (capabilities.Gamepad.ThumbRY != 0)
         {
-            var control = XInputControl.CreateThumbStick(0x800004, "Right Thumb Y");
-            _controls.Add(control);
+            var control = XInputControl.CreateThumbStick(RightThumbY, "Right Thumb Y");
+            AddControl(control);
+        }
+
+        if (capabilities.Gamepad.LeftTrigger != 0)
+        {
+            var control = XInputControl.CreateButton(LeftTrigger, "Left Trigger");
+            AddControl(control);
+        }
+
+        if (capabilities.Gamepad.RightTrigger != 0)
+        {
+            var control = XInputControl.CreateButton(RightTrigger, "Right Trigger");
+            AddControl(control);
         }
     }
 
@@ -196,4 +250,7 @@ internal class XInputController : JoypadController
 
     private static bool HasButton(XInputGamepad gamepad, int button) =>
         (gamepad.Buttons & button) == button;
+
+    private int GetButtonValue(int controlId) =>
+        ((_state?.Buttons ?? 0) & controlId) != 0 ? 1 : 0;
 }
