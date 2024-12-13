@@ -6,6 +6,6 @@ namespace OldBit.Joypad.Platforms.Windows.Interop;
 internal struct XInputState
 {
     internal uint PacketNumber;
-    
+
     internal XInputGamepad Gamepad;
 }

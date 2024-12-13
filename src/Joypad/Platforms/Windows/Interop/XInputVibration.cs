@@ -6,6 +6,6 @@ namespace OldBit.Joypad.Platforms.Windows.Interop;
 internal struct XInputVibration
 {
     internal ushort LeftMotorSpeed;
-    
+
     internal ushort RightMotorSpeed;
 }

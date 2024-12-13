@@ -37,7 +37,17 @@ public abstract class JoypadController
     {
     }
 
-    internal void Update(Control control)
+    internal void Update()
+    {
+        UpdateState();
+
+        foreach (var control in Controls)
+        {
+            ProcessControl(control);
+        }
+    }
+
+    private void ProcessControl(Control control)
     {
         if (!IsConnected)
         {
@@ -66,6 +76,8 @@ public abstract class JoypadController
             control.Value = GetValue(control);
         }
     }
+
+    protected virtual void UpdateState() { }
 
     protected abstract int? GetValue(Control control);
 

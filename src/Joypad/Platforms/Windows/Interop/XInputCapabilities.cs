@@ -6,12 +6,12 @@ namespace OldBit.Joypad.Platforms.Windows.Interop;
 internal struct XInputCapabilities
 {
     internal byte Type;
-    
+
     internal byte SubType;
-    
+
     internal ushort Flags;
-    
+
     internal XInputGamepad Gamepad;
-    
+
     internal XInputVibration Vibration;
 }

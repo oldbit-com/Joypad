@@ -92,10 +92,7 @@ public sealed class JoypadManager : IDisposable
             return;
         }
 
-        foreach (var control in controller.Controls)
-        {
-            controller.Update(control);
-        }
+        controller.Update();
     }
 
     public bool TryGetController(Guid controllerId, [NotNullWhen(true)] out JoypadController? controller)

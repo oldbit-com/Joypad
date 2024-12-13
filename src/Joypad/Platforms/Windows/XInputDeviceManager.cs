@@ -10,7 +10,7 @@ namespace OldBit.Joypad.Platforms.Windows;
 internal class XInputDeviceManager : IDeviceManager
 {
     private const int MaxControllers = 4;
-   
+
     private readonly TimeSpan _pollingInterval = TimeSpan.FromSeconds(4);
     private readonly Timer _devicePollingTimer;
     private readonly XInputController?[] _controllers = new XInputController[MaxControllers];
@@ -22,7 +22,7 @@ internal class XInputDeviceManager : IDeviceManager
     {
         _devicePollingTimer = new Timer(_pollingInterval)
         {
-            AutoReset = false
+            AutoReset = true
         };
 
         _devicePollingTimer.Elapsed += CheckControllers;
@@ -48,7 +48,7 @@ internal class XInputDeviceManager : IDeviceManager
             {
                 var controller = new XInputController(userIndex, capabilities.Value);
                 _controllers[userIndex] = controller;
-                
+
                 ControllerAdded?.Invoke(this, new ControllerEventArgs(controller));
             }
         }
