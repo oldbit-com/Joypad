@@ -26,11 +26,6 @@ manager.ControllerDisconnected += (_, e) =>
     controller = null;
 };
 
-manager.ErrorOccurred += (_, e) =>
-{
-    Console.WriteLine(e.Exception.ToString());
-};
-
 var cancellationToken = new CancellationTokenSource();
 _ = Task.Factory.StartNew(() =>
 {
