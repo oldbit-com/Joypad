@@ -71,6 +71,8 @@ public abstract class JoypadController
 
     internal void Initialize()
     {
+        UpdateState();
+
         foreach (var control in _controls)
         {
             control.Value = GetValue(control);

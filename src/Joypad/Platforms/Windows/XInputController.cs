@@ -18,7 +18,7 @@ internal class XInputController : JoypadController
     private readonly int _controllerIndex;
     private readonly XInputCapabilities _capabilities;
 
-    private XInputGamepad? _state = null;
+    private XInputGamepad? _state;
 
     internal XInputController(int controllerIndex, XInputCapabilities capabilities)
     {
@@ -54,7 +54,7 @@ internal class XInputController : JoypadController
             case XInputGamepadB:
             case XInputGamepadX:
             case XInputGamepadY:
-                return GetButtonValue(XInputGamepadDPadUp);
+                return GetButtonValue(control.Id);
 
             case LeftThumbX:
                 return _state.Value.ThumbLX;
@@ -76,7 +76,6 @@ internal class XInputController : JoypadController
 
             default:
                 return null;
-
         }
     }
 
@@ -86,25 +85,25 @@ internal class XInputController : JoypadController
     {
         if (HasButton(capabilities.Gamepad, XInputGamepadDPadUp))
         {
-            var control = XInputControl.CreateDirectionalPad(XInputGamepadDPadUp, "Directional Pad", DirectionalPadDirection.Up);
+            var control = XInputControl.CreateDirectionalPad(XInputGamepadDPadUp, "D-Pad Up", DirectionalPadDirection.Up);
             AddControl(control);
         }
 
         if (HasButton(capabilities.Gamepad, XInputGamepadDPadDown))
         {
-            var control = XInputControl.CreateDirectionalPad(XInputGamepadDPadDown, "Directional Pad", DirectionalPadDirection.Down);
+            var control = XInputControl.CreateDirectionalPad(XInputGamepadDPadDown, "D-Pad Down", DirectionalPadDirection.Down);
             AddControl(control);
         }
 
         if (HasButton(capabilities.Gamepad, XInputGamepadDPadLeft))
         {
-            var control = XInputControl.CreateDirectionalPad(XInputGamepadDPadLeft, "Directional Pad", DirectionalPadDirection.Left);
+            var control = XInputControl.CreateDirectionalPad(XInputGamepadDPadLeft, "D-Pad Left", DirectionalPadDirection.Left);
             AddControl(control);
         }
 
         if (HasButton(capabilities.Gamepad, XInputGamepadDPadRight))
         {
-            var control = XInputControl.CreateDirectionalPad(XInputGamepadDPadRight, "Directional Pad", DirectionalPadDirection.Right);
+            var control = XInputControl.CreateDirectionalPad(XInputGamepadDPadRight, "D-Pad Right", DirectionalPadDirection.Right);
             AddControl(control);
         }
 

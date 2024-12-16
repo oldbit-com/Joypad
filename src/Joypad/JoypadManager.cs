@@ -40,8 +40,9 @@ public sealed class JoypadManager : IDisposable
         _deviceManager.ControllerAdded += (_, e) =>
         {
             _controllers.Add(e.Controller);
-
             e.Controller.IsConnected = true;
+            e.Controller.Initialize();
+
             ControllerConnected?.Invoke(this, new JoypadControllerEventArgs(e.Controller));
         };
 
