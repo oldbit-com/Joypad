@@ -4,7 +4,7 @@ public abstract class Control(ControlType controlType)
 {
     public ControlType ControlType { get; } = controlType;
 
-    public int Id { get; protected set; }
+    public int Id { get; protected init; }
 
     public string Name { get; protected init; } = string.Empty;
 

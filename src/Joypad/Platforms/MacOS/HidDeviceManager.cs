@@ -6,11 +6,6 @@ using static OldBit.Joypad.Platforms.MacOS.Interop.IOKit;
 
 namespace OldBit.Joypad.Platforms.MacOS;
 
-internal class ControllerEventArgs(HidController controller) : EventArgs
-{
-    public HidController Controller { get; } = controller;
-}
-
 [SupportedOSPlatform("macos")]
 internal class HidDeviceManager : IDeviceManager
 {
@@ -19,9 +14,8 @@ internal class HidDeviceManager : IDeviceManager
     private GCHandle _gch;
     private readonly Thread _runLoopThread;
 
-    internal event EventHandler<ControllerEventArgs>? ControllerAdded;
-    internal event EventHandler<ControllerEventArgs>? ControllerRemoved;
-    internal event EventHandler<ErrorEventArgs>? ErrorOccurred;
+    public event EventHandler<ControllerEventArgs>? ControllerAdded;
+    public event EventHandler<ControllerEventArgs>? ControllerRemoved;
 
     internal HidDeviceManager()
     {
@@ -65,7 +59,7 @@ internal class HidDeviceManager : IDeviceManager
         }
         catch (Exception ex)
         {
-            ErrorOccurred?.Invoke(this, new ErrorEventArgs(ex));
+            // TODO: Log exception 
         }
     }
 
