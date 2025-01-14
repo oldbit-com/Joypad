@@ -52,7 +52,7 @@ internal class EventDeviceManager : IDeviceManager
             {
                 var eventDevice = new EventDevice(devicePath);
 
-                if (eventDevice.IsOpened)
+                if (eventDevice is { IsOpened: true, IsGamepad: true })
                 {
                     _eventDevices[devicePath] = eventDevice;
                     ControllerAdded?.Invoke(this, new ControllerEventArgs(eventDevice));
@@ -75,6 +75,7 @@ internal class EventDeviceManager : IDeviceManager
             if (eventDevice != null)
             {
                 ControllerRemoved?.Invoke(this, new ControllerEventArgs(eventDevice));
+                eventDevice.Dispose();
 
                 _eventDevices.Remove(path);
             }
@@ -93,5 +94,13 @@ internal class EventDeviceManager : IDeviceManager
         }
     }
 
-    public void Dispose() => _devicePollingTimer.Dispose();
+    public void Dispose()
+    {
+        _devicePollingTimer.Dispose();
+
+        foreach (var device in _eventDevices.Values)
+        {
+            device?.Dispose();
+        }
+    }
 }

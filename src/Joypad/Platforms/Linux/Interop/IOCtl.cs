@@ -39,12 +39,3 @@ internal static class IOCtl
     internal static uint EVIOCGNAME(int len) => _IOC(_IOC_READ, 'E', 0x06, len);
     internal static uint EVIOCGBIT(EventCode ev, int len) => _IOC(_IOC_READ, 'E', (long)(0x20 + ev), len);
 }
-
-[StructLayout(LayoutKind.Sequential)]
-internal struct InputId
-{
-    internal UInt16 BusType;
-    internal UInt16 Vendor;
-    internal UInt16 Product;
-    internal UInt16 Version;
-}
