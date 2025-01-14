@@ -19,7 +19,7 @@ internal class EventDeviceManager : IDeviceManager
     {
         _devicePollingTimer = new Timer(_pollingInterval)
         {
-            AutoReset = false
+            AutoReset = true
         };
 
         _devicePollingTimer.Elapsed += CheckControllers;
@@ -83,9 +83,9 @@ internal class EventDeviceManager : IDeviceManager
     private void RemoveDevice(EventDevice eventDevice)
     {
         ControllerRemoved?.Invoke(this, new ControllerEventArgs(eventDevice));
-        eventDevice.Dispose();
 
         _eventDevices.Remove(eventDevice.DevicePath);
+        eventDevice.Dispose();
     }
 
     private void EventDeviceOnDisconnected(object? sender, ControllerEventArgs e)
