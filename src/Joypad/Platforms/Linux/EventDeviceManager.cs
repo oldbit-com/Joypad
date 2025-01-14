@@ -51,6 +51,7 @@ internal class EventDeviceManager : IDeviceManager
             try
             {
                 var eventDevice = new EventDevice(devicePath);
+                eventDevice.Disconnected += EventDeviceOnDisconnected;
 
                 if (eventDevice is { IsOpened: true, IsGamepad: true })
                 {
@@ -74,12 +75,27 @@ internal class EventDeviceManager : IDeviceManager
 
             if (eventDevice != null)
             {
-                ControllerRemoved?.Invoke(this, new ControllerEventArgs(eventDevice));
-                eventDevice.Dispose();
-
-                _eventDevices.Remove(path);
+                RemoveDevice(eventDevice);
             }
         }
+    }
+
+    private void RemoveDevice(EventDevice eventDevice)
+    {
+        ControllerRemoved?.Invoke(this, new ControllerEventArgs(eventDevice));
+        eventDevice.Dispose();
+
+        _eventDevices.Remove(eventDevice.DevicePath);
+    }
+
+    private void EventDeviceOnDisconnected(object? sender, ControllerEventArgs e)
+    {
+        if (e.Controller is not EventDevice eventDevice)
+        {
+            return;
+        }
+
+        RemoveDevice(eventDevice);
     }
 
     private static IEnumerable<string> GetInputDevices()
