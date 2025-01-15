@@ -102,7 +102,7 @@ internal class EventDevice : JoypadController, IDisposable
 
             if (inputEvent.Type is (int)EventCode.EV_KEY or (int)EventCode.EV_ABS)
             {
-                 _controlValues[(EventCode)inputEvent.Type][inputEvent.Code] = inputEvent.Value;
+                _controlValues[(EventCode)inputEvent.Type][inputEvent.Code] = inputEvent.Value;
             }
         }
 
