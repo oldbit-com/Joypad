@@ -17,11 +17,11 @@ internal class EventDevice : JoypadController, IDisposable
     private readonly FileStream? _deviceStream;
     private readonly IntPtr _fd;
 
-    private readonly byte[] _buffer = new byte[Marshal.SizeOf(typeof(InputEvent))];
-    private readonly GCHandle? _bufferHandle;
-    private readonly IntPtr _bufferPtr;
-
-    private readonly Thread? _workerThread;
+    private readonly Dictionary<EventCode, Dictionary<int, int?>> _controlValues = new()
+    {
+        [EventCode.EV_KEY] = new Dictionary<int, int?>(),
+        [EventCode.EV_ABS] = new Dictionary<int, int?>()
+    };
     private readonly CancellationTokenSource _cancellationTokenSource = new();
 
     private bool _disposed;
@@ -43,25 +43,24 @@ internal class EventDevice : JoypadController, IDisposable
         }
 
         _fd = _deviceStream.SafeFileHandle.DangerousGetHandle();
-        _bufferHandle = GCHandle.Alloc(_buffer, GCHandleType.Pinned);
-        _bufferPtr = _bufferHandle.Value.AddrOfPinnedObject();
 
         Name = GetDeviceName();
         Id = CreateDeviceUniqueId();
 
         ProcessCapabilities();
 
-        _workerThread = new Thread(DeviceReadWorker)
+        Task.Factory.StartNew(async() =>
         {
-            IsBackground = true
-        };
-
-        _workerThread.Start();
+            await DeviceReadWorker(_cancellationTokenSource.Token);
+        }, _cancellationTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
     }
 
     protected override int? GetValue(Control control)
     {
-        return null;
+        var eventControl = (EventDeviceControl)control;
+        var controls = _controlValues[eventControl.EventCode];
+
+        return controls.GetValueOrDefault(eventControl.Code);
     }
 
     private FileStream? OpenDevice()
@@ -76,29 +75,38 @@ internal class EventDevice : JoypadController, IDisposable
         }
     }
 
-    private void DeviceReadWorker()
+    private async Task DeviceReadWorker(CancellationToken cancellationToken)
     {
-        while (!_cancellationTokenSource.IsCancellationRequested)
+        var buffer = new byte[Marshal.SizeOf(typeof(InputEvent))];
+
+        var bufferHandle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+        var bufferPtr = bufferHandle.AddrOfPinnedObject();
+
+        while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
-                // This will block until an event data is received
-                _ = _deviceStream?.Read(_buffer);
+                _ = await _deviceStream!.ReadAsync(buffer, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
             }
             catch
             {
                 Disconnected?.Invoke(this, new ControllerEventArgs(this));
-
                 break;
             }
 
-            var inputEvent = (InputEvent)Marshal.PtrToStructure(_bufferPtr, typeof(InputEvent))!;
+            var inputEvent = (InputEvent)Marshal.PtrToStructure(bufferPtr, typeof(InputEvent))!;
 
             if (inputEvent.Type is (int)EventCode.EV_KEY or (int)EventCode.EV_ABS)
             {
-                Console.WriteLine($"Event: Code: {inputEvent.Code} Type: {inputEvent.Type} Value: {inputEvent.Value}");
+                 _controlValues[(EventCode)inputEvent.Type][inputEvent.Code] = inputEvent.Value;
             }
         }
+
+        bufferHandle.Free();
     }
 
     private string GetDeviceName()
@@ -125,11 +133,11 @@ internal class EventDevice : JoypadController, IDisposable
 
     private void ProcessCapabilities()
     {
-        var capabilities = ProcessCapabilities(EventCode.EV_KEY, (int)KeyCode.KEY_MAX);
-        ProcessKeyControls(capabilities, (int)KeyCode.KEY_MAX);
+        var capabilities = ProcessCapabilities(EventCode.EV_KEY, KeyCode.KEY_MAX);
+        ProcessKeyControls(capabilities, KeyCode.KEY_MAX);
 
-        capabilities = ProcessCapabilities(EventCode.EV_ABS, (int)AbsCode.ABS_MAX);
-        ProcessAbsControls(capabilities, (int)AbsCode.ABS_MAX);
+        capabilities = ProcessCapabilities(EventCode.EV_ABS, AbsCode.ABS_MAX);
+        ProcessAbsControls(capabilities, AbsCode.ABS_MAX);
     }
 
     private byte[] ProcessCapabilities(EventCode eventCode, int maxCount)
@@ -166,67 +174,67 @@ internal class EventDevice : JoypadController, IDisposable
             switch (code)
             {
                 case KeyCode.BTN_TRIGGER:
-                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, "Trigger"));
+                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, code, "Trigger"));
                     break;
 
                 case KeyCode.BTN_A:
-                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, "A"));
+                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, code, "A"));
                     break;
 
                 case KeyCode.BTN_B:
-                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, "B"));
+                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, code, "B"));
                     break;
 
                 case KeyCode.BTN_C:
-                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, "C"));
+                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, code, "C"));
                     break;
 
                 case KeyCode.BTN_X:
-                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, "X"));
+                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, code, "X"));
                     break;
 
                 case KeyCode.BTN_Y:
-                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, "Y"));
+                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, code, "Y"));
                     break;
 
                 case KeyCode.BTN_Z:
-                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, "Z"));
+                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, code, "Z"));
                     break;
 
                 case KeyCode.BTN_TL:
-                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, "Left Trigger"));
+                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, code, "Left Trigger"));
                     break;
 
                 case KeyCode.BTN_TR:
-                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, "Right Trigger"));
+                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, code, "Right Trigger"));
                     break;
 
                 case KeyCode.BTN_TL2:
-                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, "Left Trigger 2"));
+                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, code, "Left Trigger 2"));
                     break;
 
                 case KeyCode.BTN_TR2:
-                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, "Right Trigger 2"));
+                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, code, "Right Trigger 2"));
                     break;
 
                 case KeyCode.BTN_SELECT:
-                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, "Select"));
+                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, code, "Select"));
                     break;
 
                 case KeyCode.BTN_START:
-                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, "Start"));
+                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, code, "Start"));
                     break;
 
                 case KeyCode.BTN_MODE:
-                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, "Mode"));
+                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, code, "Mode"));
                     break;
 
                 case KeyCode.BTN_THUMBL:
-                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, "Left Thumb Button"));
+                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, code, "Left Thumb Button"));
                     break;
 
                 case KeyCode.BTN_THUMBR:
-                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, "Right Thumb Button"));
+                    AddControl(new EventDeviceControl(ControlType.Button, EventCode.EV_KEY, code, "Right Thumb Button"));
                     break;
             }
         }
@@ -246,27 +254,27 @@ internal class EventDevice : JoypadController, IDisposable
             switch (code)
             {
                 case AbsCode.ABS_X:
-                    AddControl(new EventDeviceControl(ControlType.ThumbStick, EventCode.EV_ABS, "Left Thumb X"));
+                    AddControl(new EventDeviceControl(ControlType.ThumbStick, EventCode.EV_ABS, code, "Left Thumb X"));
                     break;
 
                 case AbsCode.ABS_Y:
-                    AddControl(new EventDeviceControl(ControlType.ThumbStick, EventCode.EV_ABS, "Left Thumb Y"));
+                    AddControl(new EventDeviceControl(ControlType.ThumbStick, EventCode.EV_ABS, code, "Left Thumb Y"));
                     break;
 
                 case AbsCode.ABS_Z:
-                    AddControl(new EventDeviceControl(ControlType.ThumbStick, EventCode.EV_ABS, "Left Thumb Z"));
+                    AddControl(new EventDeviceControl(ControlType.ThumbStick, EventCode.EV_ABS, code, "Left Thumb Z"));
                     break;
 
                 case AbsCode.ABS_RX:
-                    AddControl(new EventDeviceControl(ControlType.ThumbStick, EventCode.EV_ABS, "Right Thumb X"));
+                    AddControl(new EventDeviceControl(ControlType.ThumbStick, EventCode.EV_ABS, code, "Right Thumb X"));
                     break;
 
                 case AbsCode.ABS_RY:
-                    AddControl(new EventDeviceControl(ControlType.ThumbStick, EventCode.EV_ABS, "Right Thumb Y"));
+                    AddControl(new EventDeviceControl(ControlType.ThumbStick, EventCode.EV_ABS, code, "Right Thumb Y"));
                     break;
 
                 case AbsCode.ABS_RZ:
-                    AddControl(new EventDeviceControl(ControlType.ThumbStick, EventCode.EV_ABS, "Right Thumb Z"));
+                    AddControl(new EventDeviceControl(ControlType.ThumbStick, EventCode.EV_ABS, code, "Right Thumb Z"));
                     break;
 
                 case AbsCode.ABS_HAT0X:
@@ -318,11 +326,8 @@ internal class EventDevice : JoypadController, IDisposable
         }
 
         _cancellationTokenSource.Cancel();
-        _workerThread?.Join();
 
-        _bufferHandle?.Free();
         _deviceStream?.Dispose();
-
         _disposed = true;
     }
 }
