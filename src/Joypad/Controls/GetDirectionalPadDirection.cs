@@ -4,7 +4,7 @@ namespace OldBit.Joypad.Controls;
 /// Lists the possible directions of a DPad.
 /// </summary>
 [Flags]
-public enum DirectionalPadDirection
+public enum GetDirectionalPadDirection
 {
     /// <summary>
     /// No button is pressed.

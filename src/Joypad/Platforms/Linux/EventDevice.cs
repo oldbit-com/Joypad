@@ -22,8 +22,10 @@ internal class EventDevice : JoypadController, IDisposable
         [EventCode.EV_KEY] = new Dictionary<int, int?>(),
         [EventCode.EV_ABS] = new Dictionary<int, int?>()
     };
-    private readonly CancellationTokenSource _cancellationTokenSource = new();
 
+    private CancellationTokenSource? _cancellationTokenSource;
+
+    private bool _isActive;
     private bool _disposed;
 
     internal string DevicePath { get; }
@@ -48,11 +50,6 @@ internal class EventDevice : JoypadController, IDisposable
         Id = CreateDeviceUniqueId();
 
         ProcessCapabilities();
-
-        Task.Factory.StartNew(async() =>
-        {
-            await DeviceReadWorker(_cancellationTokenSource.Token);
-        }, _cancellationTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
     }
 
     protected override int? GetValue(Control control)
@@ -60,7 +57,63 @@ internal class EventDevice : JoypadController, IDisposable
         var eventControl = (EventDeviceControl)control;
         var controls = _controlValues[eventControl.EventCode];
 
-        return controls.GetValueOrDefault(eventControl.Code);
+        if (eventControl.ControlType != ControlType.DirectionalPad)
+        {
+            return controls.GetValueOrDefault(eventControl.Code);
+        }
+
+        return (int)DirectionalPadDirection(controls);
+    }
+
+    private static GetDirectionalPadDirection DirectionalPadDirection(Dictionary<int, int?> controls)
+    {
+        var x = controls.GetValueOrDefault(AbsCode.ABS_HAT0X);
+        var y = controls.GetValueOrDefault(AbsCode.ABS_HAT0Y);
+
+        var value = x switch
+        {
+            1 => GetDirectionalPadDirection.Right,
+            -1 => GetDirectionalPadDirection.Left,
+            _ => GetDirectionalPadDirection.None
+        };
+
+        value |= y switch
+        {
+            1 => GetDirectionalPadDirection.Up,
+            -1 => GetDirectionalPadDirection.Down,
+            _ => GetDirectionalPadDirection.None
+        };
+
+        return value;
+    }
+
+    public override void Activate()
+    {
+        if (_isActive)
+        {
+            return;
+        }
+
+        _cancellationTokenSource?.Dispose();
+        _cancellationTokenSource = new CancellationTokenSource();
+
+        Task.Factory.StartNew(async() =>
+        {
+            _isActive = true;
+
+            await DeviceReadWorker(_cancellationTokenSource.Token);
+        }, _cancellationTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+    }
+
+    public override void Deactivate()
+    {
+        if (!_isActive)
+        {
+            return;
+        }
+
+        _cancellationTokenSource?.Cancel();
+        _isActive = false;
     }
 
     private FileStream? OpenDevice()
@@ -98,15 +151,20 @@ internal class EventDevice : JoypadController, IDisposable
                 break;
             }
 
-            var inputEvent = (InputEvent)Marshal.PtrToStructure(bufferPtr, typeof(InputEvent))!;
-
-            if (inputEvent.Type is (int)EventCode.EV_KEY or (int)EventCode.EV_ABS)
-            {
-                _controlValues[(EventCode)inputEvent.Type][inputEvent.Code] = inputEvent.Value;
-            }
+            ProcessEventBuffer(bufferPtr);
         }
 
         bufferHandle.Free();
+    }
+
+    private void ProcessEventBuffer(IntPtr buffer)
+    {
+        var inputEvent = (InputEvent)Marshal.PtrToStructure(buffer, typeof(InputEvent))!;
+
+        if (inputEvent.Type is (int)EventCode.EV_KEY or (int)EventCode.EV_ABS)
+        {
+            _controlValues[(EventCode)inputEvent.Type][inputEvent.Code] = inputEvent.Value;
+        }
     }
 
     private string GetDeviceName()
@@ -278,11 +336,11 @@ internal class EventDevice : JoypadController, IDisposable
                     break;
 
                 case AbsCode.ABS_HAT0X:
-                    // Directional pad X axis
-                    break;
-
                 case AbsCode.ABS_HAT0Y:
-                    // Directional pad y axis
+                    if (Controls.FirstOrDefault(c => c.ControlType == ControlType.DirectionalPad) == null)
+                    {
+                        AddControl(new EventDeviceControl(ControlType.DirectionalPad, EventCode.EV_ABS, code, "Directional Pad"));
+                    }
                     break;
             }
         }
@@ -325,7 +383,8 @@ internal class EventDevice : JoypadController, IDisposable
             return;
         }
 
-        _cancellationTokenSource.Cancel();
+        _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource?.Dispose();
 
         _deviceStream?.Dispose();
         _disposed = true;

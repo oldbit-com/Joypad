@@ -12,9 +12,13 @@ manager.ControllerConnected += (_, e) =>
 {
     Console.WriteLine($"Connected: {e.Controller.Name} / {e.Controller.Id}");
 
+    controller?.Deactivate();
+
     controller = e.Controller;
     controller.ValueChanged -= ControllerOnValueChanged;
     controller.ValueChanged += ControllerOnValueChanged;
+
+    controller?.Activate();
 
     return;
 
