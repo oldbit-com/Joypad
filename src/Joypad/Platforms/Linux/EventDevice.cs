@@ -62,26 +62,26 @@ internal class EventDevice : JoypadController, IDisposable
             return controls.GetValueOrDefault(eventControl.Code);
         }
 
-        return (int)DirectionalPadDirection(controls);
+        return (int)GetDirectionalPadDirection(controls);
     }
 
-    private static GetDirectionalPadDirection DirectionalPadDirection(Dictionary<int, int?> controls)
+    private static DirectionalPadDirection GetDirectionalPadDirection(Dictionary<int, int?> controls)
     {
         var x = controls.GetValueOrDefault(AbsCode.ABS_HAT0X);
         var y = controls.GetValueOrDefault(AbsCode.ABS_HAT0Y);
 
         var value = x switch
         {
-            1 => GetDirectionalPadDirection.Right,
-            -1 => GetDirectionalPadDirection.Left,
-            _ => GetDirectionalPadDirection.None
+            1 => DirectionalPadDirection.Right,
+            -1 => DirectionalPadDirection.Left,
+            _ => DirectionalPadDirection.None
         };
 
         value |= y switch
         {
-            1 => GetDirectionalPadDirection.Up,
-            -1 => GetDirectionalPadDirection.Down,
-            _ => GetDirectionalPadDirection.None
+            1 => DirectionalPadDirection.Up,
+            -1 => DirectionalPadDirection.Down,
+            _ => DirectionalPadDirection.None
         };
 
         return value;
