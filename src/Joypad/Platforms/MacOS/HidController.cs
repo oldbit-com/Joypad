@@ -37,17 +37,17 @@ internal class HidController : JoypadController
         return value;
     }
 
-    private static DirectionalPadDirection GetDirectionalPadDirection(int? value) => value switch
+    private static GetDirectionalPadDirection GetDirectionalPadDirection(int? value) => value switch
     {
-        0 => DirectionalPadDirection.Up,
-        1 => DirectionalPadDirection.Up | DirectionalPadDirection.Right,
-        2 => DirectionalPadDirection.Right,
-        3 => DirectionalPadDirection.Down | DirectionalPadDirection.Right,
-        4 => DirectionalPadDirection.Down,
-        5 => DirectionalPadDirection.Down | DirectionalPadDirection.Left,
-        6 => DirectionalPadDirection.Left,
-        7 => DirectionalPadDirection.Up | DirectionalPadDirection.Left,
-        _ => DirectionalPadDirection.None
+        0 => Joypad.Controls.GetDirectionalPadDirection.Up,
+        1 => Joypad.Controls.GetDirectionalPadDirection.Up | Joypad.Controls.GetDirectionalPadDirection.Right,
+        2 => Joypad.Controls.GetDirectionalPadDirection.Right,
+        3 => Joypad.Controls.GetDirectionalPadDirection.Down | Joypad.Controls.GetDirectionalPadDirection.Right,
+        4 => Joypad.Controls.GetDirectionalPadDirection.Down,
+        5 => Joypad.Controls.GetDirectionalPadDirection.Down | Joypad.Controls.GetDirectionalPadDirection.Left,
+        6 => Joypad.Controls.GetDirectionalPadDirection.Left,
+        7 => Joypad.Controls.GetDirectionalPadDirection.Up | Joypad.Controls.GetDirectionalPadDirection.Left,
+        _ => Joypad.Controls.GetDirectionalPadDirection.None
     };
 
     internal void ProcessElements()

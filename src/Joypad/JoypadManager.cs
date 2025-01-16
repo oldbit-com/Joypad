@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using OldBit.Joypad.Platforms;
+using OldBit.Joypad.Platforms.Linux;
 using OldBit.Joypad.Platforms.MacOS;
 using OldBit.Joypad.Platforms.Windows;
 
@@ -47,8 +48,7 @@ public sealed class JoypadManager : IDisposable
         }
         else if (OperatingSystem.IsLinux())
         {
-            // TODO: Implement Linux device manager
-            throw new NotImplementedException();
+            _deviceManager = new EventDeviceManager();
         }
         else
         {

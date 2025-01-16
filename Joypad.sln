@@ -6,6 +6,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Joypad", "src\Joypad\Joypad
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoApp", "src\DemoApp\DemoApp.csproj", "{4A8985FE-01F9-42C0-9702-D62DB1C872D4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{42641EFC-CC2E-40EC-B090-36A986A41D47}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Joypad.Tests", "tests\Joypad.Tests\Joypad.Tests.csproj", "{3F8576A9-B07D-44F2-A192-45FE64562692}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,6 +18,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{8FF3ACA9-0E56-4473-8C0F-7FD7BA22CDDE} = {B8C5C7DA-BB85-4083-8639-F40574DF37A5}
 		{4A8985FE-01F9-42C0-9702-D62DB1C872D4} = {B8C5C7DA-BB85-4083-8639-F40574DF37A5}
+		{3F8576A9-B07D-44F2-A192-45FE64562692} = {42641EFC-CC2E-40EC-B090-36A986A41D47}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{8FF3ACA9-0E56-4473-8C0F-7FD7BA22CDDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -24,5 +29,9 @@ Global
 		{4A8985FE-01F9-42C0-9702-D62DB1C872D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A8985FE-01F9-42C0-9702-D62DB1C872D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A8985FE-01F9-42C0-9702-D62DB1C872D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F8576A9-B07D-44F2-A192-45FE64562692}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F8576A9-B07D-44F2-A192-45FE64562692}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F8576A9-B07D-44F2-A192-45FE64562692}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F8576A9-B07D-44F2-A192-45FE64562692}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

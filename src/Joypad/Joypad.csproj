@@ -14,9 +14,11 @@
         <PackageProjectUrl>https://github.com/oldbit-com/Joypad</PackageProjectUrl>
         <RepositoryUrl>https://github.com/oldbit-com/Joypad</RepositoryUrl>
     </PropertyGroup>
-    
+
     <ItemGroup>
-      <Folder Include="Platforms\Linux\" />
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+            <_Parameter1>OldBit.Joypad.Tests</_Parameter1>
+        </AssemblyAttribute>
     </ItemGroup>
 
 </Project>

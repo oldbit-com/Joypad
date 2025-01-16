@@ -37,6 +37,29 @@ public abstract class JoypadController
     {
     }
 
+    protected virtual void UpdateState()
+    {
+    }
+
+    protected abstract int? GetValue(Control control);
+
+    public bool TryGetControl(int controlId, [NotNullWhen(true)] out Control? control) =>
+        _controlsById.TryGetValue(controlId, out control);
+
+    /// <summary>
+    /// Activates the controller..
+    /// </summary>
+    public virtual void Activate()
+    {
+    }
+
+    /// <summary>
+    /// Deactivates the controller.
+    /// </summary>
+    public virtual void Deactivate()
+    {
+    }
+
     internal void Update()
     {
         UpdateState();
@@ -45,6 +68,22 @@ public abstract class JoypadController
         {
             ProcessControl(control);
         }
+    }
+
+    internal void Initialize()
+    {
+        UpdateState();
+
+        foreach (var control in _controls)
+        {
+            control.Value = GetValue(control);
+        }
+    }
+
+    internal void AddControl(Control control)
+    {
+        _controls.Add(control);
+        _controlsById[control.Id] = control;
     }
 
     private void ProcessControl(Control control)
@@ -64,28 +103,5 @@ public abstract class JoypadController
         control.Value = value;
 
         ValueChanged?.Invoke(this, new ControlEventArgs(control));
-    }
-
-    public bool TryGetControl(int controlId, [NotNullWhen(true)] out Control? control) =>
-        _controlsById.TryGetValue(controlId, out  control);
-
-    internal void Initialize()
-    {
-        UpdateState();
-
-        foreach (var control in _controls)
-        {
-            control.Value = GetValue(control);
-        }
-    }
-
-    protected virtual void UpdateState() { }
-
-    protected abstract int? GetValue(Control control);
-
-    internal void AddControl(Control control)
-    {
-        _controls.Add(control);
-        _controlsById[control.Id] = control;
     }
 }

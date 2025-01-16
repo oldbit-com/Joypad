@@ -18,21 +18,18 @@ Therefore, I decided to create my own solution.
 - [Linux](#Linux)
 
 ### MacOS
-Implementation is based on IOHID, part of [IOKit](https://developer.apple.com/documentation/iokit) framework. Any controller that is compatible with MacOS should work.
+Implementation is using IOHID, part of [IOKit](https://developer.apple.com/documentation/iokit) framework. Any controller that is compatible with MacOS should work.
 
 ### Windows
-Implementation is based [XInput](https://docs.microsoft.com/en-us/windows/win32/xinput/xinput-technical-reference) API. This is very easy to use API, but only supports controllers that
+Implementation is using [XInput](https://docs.microsoft.com/en-us/windows/win32/xinput/xinput-technical-reference) API. This is very easy to use API, but only supports controllers that
 are compatible with XInput. Therefore some older legacy controllers might not work. The alternative is to use DirectInput, 
 but it is not supported by this library.
 
 ### Linux
-TODO: Implementation uses
+Implementation is using [evdev](https://docs.kernel.org/input/input.html#event-interface).
 
 ## Usage
+See (DemoApp)[src/DemoApp] for a simple example of how to use the library.
 
-The main class is `JoypadManager`
-
-```csharp
-
-```
-
+## TODO
+Normalize output values for analog controls.

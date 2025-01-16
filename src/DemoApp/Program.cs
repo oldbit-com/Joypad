@@ -12,8 +12,13 @@ manager.ControllerConnected += (_, e) =>
 {
     Console.WriteLine($"Connected: {e.Controller.Name} / {e.Controller.Id}");
 
+    controller?.Deactivate();
+
     controller = e.Controller;
+    controller.ValueChanged -= ControllerOnValueChanged;
     controller.ValueChanged += ControllerOnValueChanged;
+
+    controller?.Activate();
 
     return;
 
@@ -35,11 +40,11 @@ manager.ControllerDisconnected += (_, e) =>
 var cancellationToken = new CancellationTokenSource();
 
 // Run main loop that will update controller state periodically
-_ = Task.Factory.StartNew(() =>
+_ = Task.Factory.StartNew(async() =>
 {
     while (!cancellationToken.IsCancellationRequested)
     {
-        Thread.Sleep(100);
+        await Task.Delay(100);
 
         if (controller is not { IsConnected: true })
         {
