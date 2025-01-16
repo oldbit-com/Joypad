@@ -29,7 +29,7 @@ but it is not supported by this library.
 Implementation is using [evdev](https://docs.kernel.org/input/input.html#event-interface).
 
 ## Usage
-See (DemoApp)[src/DemoApp] for a simple example of how to use the library.
+See [DemoApp](src/DemoApp) for a simple example of how to use the library.
 
 ## TODO
 Normalize output values for analog controls.
