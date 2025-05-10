@@ -59,7 +59,7 @@ internal class HidDeviceManager : IDeviceManager
         }
         catch (Exception ex)
         {
-            // TODO: Log exception 
+            // TODO: Log exception
         }
     }
 
