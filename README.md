@@ -1,10 +1,15 @@
 # Joypad
 
-Joypad is a simple cross-platform game controller library for dotnet. It supports both USB and Bluetooth game controllers.
+Joypad is a simple cross-platform game controller library for dotnet. 
+It supports both USB and Bluetooth game controllers.
 
 It was specifically created to be used by [Spectron](https://github.com/oldbit-com/Spectron), my ZX Spectrum emulator. 
 I needed a simple way of handling game controllers and couldn't find anything that would suit my needs.
 Therefore, I decided to create my own solution.
+
+
+> [!NOTE]  
+> Needs more testing on all platforms.
 
 ## Features
 - written in C# and .NET 8
